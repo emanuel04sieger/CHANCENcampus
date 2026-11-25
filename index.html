@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Schulungsfortschritt STB</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap">
+<style>
+/*
+VOICE: ruhig und sachlich, ein Arbeitswerkzeug für STBs im vertrauten CHANCENcampus
+IDEA: die Testübersicht der Lernverlaufsdiagnostik, umgebaut zur Teamliste mit Kapitel-Stempeln
+PICTURE: die Fortschrittstabelle selbst: Ampelzeilen und sechs Kapitelmarken pro Person
+COLOUR and TYPE: Campus-Limette als Rahmen, Pine für Aktionen, Ampeltöne aus der Demo; Montserrat
+LAYOUT: grüne Seitenleiste links, rechts Titel, eine Filterzeile, Ampelchips, Tabelle; mobil gestapelt
+*/
+:root{color-scheme:light dark;
+--side:light-dark(#A8CC30,#3B4E12);--side-hi:light-dark(#B9D857,#4A611A);--side-deep:light-dark(#97B927,#33440F);--side-ink:light-dark(#FFFFFF,#EEF5DA);
+--bg:light-dark(#F2F2F2,#151715);--card:light-dark(#FFFFFF,#1F221F);--ink:light-dark(#151515,#ECEEEA);--ink2:light-dark(#4D4D4D,#BFC3BB);--muted:light-dark(#666666,#9EA39A);
+--line:light-dark(#DDDDDD,#343834);--th:light-dark(#E5E5E5,#2A2E2A);--chip:light-dark(#F1F1F1,#2A2E2A);
+--pine:light-dark(#076259,#4FC2B2);--pine-ink:light-dark(#076259,#83D9CC);--on-pine:light-dark(#FFFFFF,#0A1A17);--pine-soft:light-dark(#D6E7E4,#1D3A36);
+--orange:#DE8E26;--demo:#EDDA43;
+--r-bg:light-dark(#F8E5E4,#3A2321);--o-bg:light-dark(#F9ECDA,#3A2D18);--g-bg:light-dark(#F0F6DC,#24301B);
+--good:light-dark(#00876F,#3FB3A2);--warn:light-dark(#E3962B,#D68A26);--crit:light-dark(#C2362D,#C8443C);
+--on-good:light-dark(#FFFFFF,#0B0B0B);--on-warn:#0B0B0B;--on-crit:#FFFFFF;
+--good-t:light-dark(#006B58,#6FD3C3);--warn-t:light-dark(#8F5200,#F0B566);--crit-t:light-dark(#A3261E,#F39A90);
+--dis:light-dark(#ECECEC,#2A2D2A);--dis-line:light-dark(#D4D4D4,#3A3E3A);--dis-ink:light-dark(#8A8A8A,#80857D);
+--f:"Montserrat",system-ui,-apple-system,"Segoe UI",sans-serif}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 var(--f);overflow-x:clip}
+button,input,select,textarea{font:inherit;color:inherit}
+svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+:focus-visible{outline:3px solid var(--orange);outline-offset:2px}
+.scroll{overflow-x:auto}
+/* Campus-Rahmen */
+.app{display:grid;grid-template-columns:252px minmax(0,1fr);min-height:100vh;background:linear-gradient(90deg,var(--side) 252px,transparent 252px)}
+.side{background:var(--side);color:var(--side-ink);position:sticky;top:0;height:100vh;display:flex;flex-direction:column;padding:16px 0 12px;overflow-y:auto}
+.logo{display:flex;align-items:center;gap:10px;padding:0 12px 22px}
+.logo b{display:block;font-size:27px;font-weight:800;letter-spacing:.04em;line-height:1}
+.logo span{display:block;font-size:24px;font-weight:600;line-height:1;margin-left:2px}
+.sec{font-size:13px;font-weight:700;padding:6px 10px}
+.nav a{display:flex;align-items:center;gap:12px;padding:8px 14px;color:inherit;text-decoration:none;font-size:14px;font-weight:500;min-height:36px}
+.nav a svg{width:14px;height:14px}
+.nav a[aria-current=page]{background:var(--side-hi);font-weight:700}
+.nav a:hover{background:var(--side-hi)}
+.sfoot{margin-top:auto;text-align:center;font-size:13px;padding:0 6px}
+.view-sw{display:flex;align-items:center;justify-content:space-between;margin:4px 0 18px}
+.view-sw button{background:none;border:0;color:inherit;width:44px;height:44px;cursor:pointer;font-size:26px;line-height:1}
+.view-sw .pill{background:var(--side-deep);border-radius:8px;padding:5px 12px;font-weight:700}
+.sbtns{display:flex;gap:8px;padding:6px 0 14px}
+.sbtns button{flex:1;height:36px;border:1.5px solid currentColor;border-radius:999px;background:none;cursor:pointer;display:grid;place-items:center}
+.sbtns button:last-child{flex:0 0 72px}
+.prod{line-height:1.4}.prod b{font-weight:800;letter-spacing:.06em}
+main{padding:18px clamp(16px,2.4vw,32px) 72px}
+.head{display:flex;gap:16px;justify-content:space-between;align-items:flex-start;flex-wrap:wrap}
+h1{font-size:clamp(28px,3.4vw,38px);line-height:1.05;margin:0 0 6px;font-weight:800;text-wrap:balance}
+.lead{margin:0;max-width:72ch;font-size:14px;color:var(--ink2)}
+.demo{display:flex;flex-direction:column;align-items:flex-end;gap:4px;font-size:13px;color:var(--muted)}
+.demo b{background:var(--demo);color:#4D4D4D;border-radius:999px;padding:4px 14px;font-weight:700}
+.card{background:var(--card);border-radius:14px;padding:16px 18px;margin-top:16px;box-shadow:0 1px 2px rgba(0,0,0,.05)}
+/* Filter wie Demo */
+.filters{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.9fr) minmax(0,1.3fr) minmax(0,1.15fr);gap:12px 16px}
+.filters.short{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(max-width:1100px){.filters{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:640px){.filters,.filters.short{grid-template-columns:minmax(0,1fr)}}
+.filters label{display:block;font-size:13px;font-weight:700;color:var(--pine-ink);margin-bottom:5px}
+.filters select,.filters input{width:100%;height:44px;border:2px solid var(--pine);border-radius:8px;background:var(--card);padding:0 12px;font-size:16px}
+.chiprow{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:16px}
+.chip{border:2px solid transparent;border-radius:999px;padding:8px 16px;min-height:44px;font-weight:600;font-size:14px;cursor:pointer;background:var(--chip);color:var(--ink2)}
+.chip.r{background:var(--r-bg)}.chip.o{background:var(--o-bg)}.chip.g{background:var(--g-bg)}
+.chip[aria-pressed=true]{border-color:var(--pine);color:var(--ink)}
+.acts{margin-left:auto;display:flex;flex-wrap:wrap;gap:10px}
+.obtn,.pbtn{display:inline-flex;align-items:center;gap:8px;border:2px solid var(--pine);border-radius:8px;padding:8px 14px;min-height:44px;font-weight:600;font-size:14px;cursor:pointer;background:var(--card);color:var(--pine-ink)}
+.pbtn{background:var(--pine);color:var(--on-pine)}
+.obtn:disabled{border-color:var(--dis-line);color:var(--dis-ink);background:var(--dis);cursor:not-allowed}
+.legend{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:14px;font-size:13px;color:var(--ink2);align-items:center}
+.legend span{display:inline-flex;align-items:center;gap:8px}.legend span.amp{display:block}
+/* Tabelle */
+.tablecard{padding:0;overflow:hidden}
+table{border-collapse:separate;border-spacing:0;width:100%}
+.grid{min-width:1000px;font-size:14px}
+.grid th{background:var(--th);text-align:left;font-weight:700;font-size:13px;padding:9px 10px;white-space:nowrap;border-bottom:1px solid var(--line)}
+.grid th.grp{text-align:center;border-left:2px solid var(--card);border-right:2px solid var(--card)}
+.grid th.k{text-align:center;padding:6px 4px;cursor:help}
+.grid td{padding:8px 10px;border-bottom:1px solid var(--line);background:var(--card);vertical-align:middle}
+.grid td.k{text-align:center;padding:8px 2px}
+.grid tr.r td.t{background:var(--r-bg)}.grid tr.o td.t{background:var(--o-bg)}.grid tr.g td.t{background:var(--g-bg)}
+.c-name{position:sticky;left:0;z-index:1;min-width:160px}
+th.c-name{z-index:2}
+.c-act{text-align:center!important;white-space:nowrap}.c-act .ibtn+.ibtn{margin-left:6px}
+.name{background:none;border:0;padding:0;color:var(--pine-ink);font-weight:600;text-decoration:underline;text-underline-offset:4px;cursor:pointer;text-align:left;font-size:15px}
+.role{display:inline-block;border:1.5px solid var(--line);border-radius:999px;padding:2px 8px;font-size:13px;font-weight:600;white-space:nowrap}
+.kpf{font-size:13px;white-space:nowrap}
+.tok{display:inline-grid;place-items:center;width:40px;height:28px;border-radius:8px;font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;cursor:help}
+.tok svg.i{width:15px;height:15px}
+.tok.pass{background:var(--pine);color:var(--on-pine)}
+.tok.fail{background:var(--card);color:var(--crit-t);box-shadow:inset 0 0 0 2px var(--crit)}
+.tok.open{background:var(--card);color:var(--pine-ink);box-shadow:inset 0 0 0 2px var(--pine)}
+.tok.lock{background:var(--dis);color:var(--dis-ink);box-shadow:inset 0 0 0 1px var(--dis-line)}
+.prog{display:flex;align-items:center;gap:8px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.meter{width:44px;height:8px;border-radius:4px;background:var(--pine-soft);overflow:hidden}
+.meter i{display:block;height:100%;background:var(--pine);border-radius:4px}
+.st{display:inline-flex;align-items:center;gap:7px;font-weight:600;white-space:nowrap}
+.st small{display:block;font-weight:500;color:var(--ink2);font-size:13px}
+.st.g{color:var(--good-t)}.st.o{color:var(--warn-t)}.st.r{color:var(--crit-t)}
+.st span{color:var(--ink)}
+.ibtn{width:38px;height:38px;border:2px solid var(--pine);border-radius:8px;display:inline-grid;place-items:center;background:var(--card);color:var(--pine-ink);cursor:pointer}
+.ibtn:disabled{border-color:var(--dis-line);background:var(--dis);color:var(--dis-ink);cursor:not-allowed}
+.mlbl{display:none;color:var(--ink2);font-size:13px}
+.empty{text-align:center;color:var(--muted);padding:28px!important}
+.note{font-size:13px;color:var(--muted);margin:10px 4px 0}
+details.src{margin-top:16px;background:var(--card);border-radius:14px;padding:14px 18px;font-size:14px}
+details.src summary{cursor:pointer;font-weight:700;color:var(--pine-ink)}
+details.src ul{margin:10px 0 0;padding-left:1.2em;color:var(--ink2)}
+/* Auswertung */
+.v-title{font-size:clamp(22px,2.6vw,30px);line-height:1.15;margin:22px 0 4px;font-weight:800;text-wrap:balance}
+.tiles{display:grid;grid-template-columns:minmax(0,1.4fr) repeat(3,minmax(0,1fr));gap:12px;margin-top:14px}
+@media(max-width:900px){.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.tile{background:var(--card);border-radius:14px;padding:16px 18px}
+.tile .l{font-size:13px;font-weight:600;color:var(--ink2)}
+.tile .v{font-size:30px;font-weight:700;line-height:1.15;margin-top:4px}
+.tile .v small{font-size:15px;font-weight:600;color:var(--ink2)}
+.tile.hero .v{font-size:clamp(44px,5vw,56px);color:var(--pine-ink);line-height:1}
+.tile .d{font-size:13px;color:var(--good-t);font-weight:600;margin-top:6px}
+.two{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:16px}
+@media(max-width:1000px){.two{grid-template-columns:minmax(0,1fr)}}
+.card h3{margin:0 0 4px;font-size:17px}
+.card .sub{margin:0 0 14px;font-size:13px;color:var(--ink2)}
+.keys{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--ink2);margin-bottom:12px}
+.keys span{display:inline-flex;align-items:center;gap:6px}.keys i{width:12px;height:12px;border-radius:3px}
+.segrow{display:grid;grid-template-columns:200px minmax(0,1fr) 32px;gap:12px;align-items:center;margin:10px 0}
+.seglbl{font-size:14px;font-weight:600;line-height:1.25}.seglbl small{display:block;font-weight:500;color:var(--muted);font-size:13px}
+.seg{display:flex;gap:2px;height:28px}
+.seg .b{flex-basis:0;display:flex;align-items:center;padding-left:8px;border-radius:4px;font-size:13px;font-weight:700;cursor:help;overflow:visible;white-space:nowrap}
+.seg .b.nolbl{color:transparent!important}
+.b.g,.keys .g{background:var(--good);color:var(--on-good)}.b.o,.keys .o{background:var(--warn);color:var(--on-warn)}.b.r,.keys .r{background:var(--crit);color:var(--on-crit)}
+.segn{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+@media(max-width:600px){.segrow{grid-template-columns:minmax(0,1fr) 32px}.seglbl{grid-column:1/-1}}
+.fun{display:grid;grid-template-columns:minmax(150px,260px) minmax(0,1fr);gap:4px 14px;align-items:center}
+.fun .lb{font-size:14px;font-weight:600;padding:5px 0}.fun .lb b{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--pine-soft);color:var(--pine-ink);font-size:13px;margin-right:8px}
+.fun .tr{display:flex;align-items:center;gap:8px;border-left:1px solid var(--dis-line);height:30px}
+.fun .fill{height:18px;background:var(--pine);border-radius:0 4px 4px 0;cursor:help;min-width:2px}
+.fun .val{font-size:13px;font-weight:600;white-space:nowrap;font-variant-numeric:tabular-nums;color:var(--ink2)}
+@media(max-width:600px){.fun{grid-template-columns:minmax(0,1fr)}.fun .lb{padding-bottom:0}}
+.diff{font-size:14px;min-width:640px}
+.diff th{text-align:left;font-size:13px;padding:8px 10px;background:var(--th)}
+.diff td{padding:9px 10px;border-bottom:1px solid var(--line)}
+.diff .n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.diff tr.hard td{background:var(--o-bg)}
+.flag{display:inline-block;margin-left:8px;font-size:13px;font-weight:700;color:var(--warn-t)}
+/* Export */
+.opts{display:flex;flex-wrap:wrap;gap:10px 24px;margin:6px 0 14px}
+.opts label{display:inline-flex;gap:10px;align-items:center;min-height:44px;cursor:pointer}
+.opts input{width:20px;height:20px;accent-color:var(--pine)}
+pre{background:var(--bg);border-radius:10px;padding:12px 14px;font-size:13px;overflow-x:auto;max-height:300px;margin:0}
+/* Drawer, Modal, Tooltip */
+.scrim{position:fixed;inset:0;background:rgba(10,20,18,.42);display:flex;justify-content:flex-end;z-index:50}
+.scrim[hidden]{display:none}
+.scrim.center{justify-content:center;align-items:center;padding:16px}
+.drawer{width:min(580px,100%);height:100%;overflow-y:auto;background:var(--card);padding:22px clamp(18px,3vw,30px) 40px;animation:slide .22s ease-out}
+@keyframes slide{from{transform:translateX(40px);opacity:.4}}
+@media(prefers-reduced-motion:reduce){.drawer{animation:none}}
+.modal{width:min(640px,100%);max-height:100%;overflow-y:auto;background:var(--card);border-radius:16px;padding:22px 24px}
+.xbtn{float:right;width:44px;height:44px;border:0;background:var(--chip);border-radius:50%;cursor:pointer;display:grid;place-items:center}
+.d-meta{font-size:13px;color:var(--ink2);margin:4px 0 2px}
+.drawer h2,.modal h2{font-size:26px;line-height:1.1;margin:6px 0 10px}
+.badge{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:6px 14px;font-weight:700;font-size:14px}
+.badge.r{background:var(--r-bg);color:var(--crit-t)}.badge.o{background:var(--o-bg);color:var(--warn-t)}.badge.g{background:var(--g-bg);color:var(--good-t)}
+.facts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:18px 0}
+.facts div{background:var(--bg);border-radius:10px;padding:10px 12px;font-size:13px;color:var(--ink2)}
+.facts b{display:block;font-size:17px;color:var(--ink)}
+.chl{list-style:none;padding:0;margin:8px 0 0}
+.chl li{display:grid;grid-template-columns:36px minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+.chl .num{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:14px}
+.num.pass{background:var(--pine);color:var(--on-pine)}.num.fail{box-shadow:inset 0 0 0 2px var(--crit);color:var(--crit-t)}.num.open{box-shadow:inset 0 0 0 2px var(--pine);color:var(--pine-ink)}.num.lock{background:var(--dis);color:var(--dis-ink)}
+.chl .t{font-weight:600;font-size:15px}.chl .m{font-size:13px;color:var(--ink2)}
+.dots{display:flex;gap:4px;align-items:center;font-size:13px;font-weight:700;font-variant-numeric:tabular-nums}
+.dots i{width:10px;height:10px;border-radius:50%;background:var(--dis-line)}.dots i.on{background:var(--pine)}.dots i.onf{background:var(--crit)}
+.dots span{margin-left:6px;min-width:28px;text-align:right}
+.dacts{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+.cert{border:3px solid var(--pine);border-radius:16px;padding:22px;text-align:center;background:var(--g-bg);margin-top:16px}
+.cert .big{font-size:22px;font-weight:800;margin:.2em 0}
+.rcpt{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 14px}
+.rcpt span{background:var(--chip);border-radius:999px;padding:4px 12px;font-size:13px;font-weight:600}
+textarea{width:100%;min-height:220px;border:2px solid var(--pine);border-radius:10px;padding:12px;font-size:15px;line-height:1.5;background:var(--card);resize:vertical}
+.tip{position:fixed;z-index:80;pointer-events:none;background:var(--ink);color:var(--card);border-radius:8px;padding:8px 11px;font-size:13px;max-width:280px;white-space:pre-line;box-shadow:0 4px 14px rgba(0,0,0,.2)}
+.tip b{display:block;font-size:14px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--card);padding:11px 18px;border-radius:10px;font-size:14px;font-weight:600;z-index:90;max-width:calc(100% - 32px)}
+.totop{position:fixed;right:22px;bottom:22px;width:52px;height:52px;border-radius:50%;border:0;background:var(--orange);color:#fff;display:grid;place-items:center;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.18);z-index:40}
+.totop[hidden]{display:none}
+[hidden]{display:none!important}
+@media(max-width:900px){
+ .app{grid-template-columns:minmax(0,1fr)}
+ .side{position:static;height:auto;padding:12px 0 0}
+ .logo{padding-bottom:8px}.sec{display:none}
+ .nav{display:flex;overflow-x:auto}.nav a{flex:none;padding:10px 14px}
+ .sfoot{display:none}
+ .app{background:none}
+}
+@media(max-width:700px){
+ .tablecard{background:transparent;box-shadow:none}
+ .grid{min-width:0}.grid thead{display:none}
+ .grid tbody tr{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px 6px;padding:14px;margin-bottom:10px;border-radius:14px;background:var(--card)}
+ .grid tr.r{background:var(--r-bg)}.grid tr.o{background:var(--o-bg)}.grid tr.g{background:var(--g-bg)}
+ .grid td{border:0;padding:0!important;background:transparent!important}
+ .grid td.c-name{position:static;grid-column:1/5;min-width:0}
+ .grid td.c-role{grid-column:5/7;text-align:right}
+ .grid td.kpf{grid-column:1/-1;color:var(--ink2);margin-top:-6px}
+ .grid td.c-prog,.grid td.c-st,.grid td.c-akt,.grid td.c-act{grid-column:span 3;align-self:center}
+ .grid td.c-st,.grid td.c-act{text-align:right!important}.grid td.c-st .st{text-align:left}
+ .grid td.empty{grid-column:1/-1}
+ .mlbl{display:inline}
+}
+</style>
+</head>
+<body>
+<div class="app">
+ <aside class="side" aria-label="CHANCENcampus Navigation">
+  <div class="logo">
+   <svg width="58" height="58" viewBox="0 0 58 58" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"><circle cx="29" cy="31" r="11"/><path d="M29 6v8M29 48v6M6 31h7M45 31h7M12.5 14.5l5 5M41 43l4.5 4.5M45.5 14.5l-5 5M17 43l-4.5 4.5"/></g><circle cx="44" cy="12" r="4" fill="currentColor"/></svg>
+   <div><b>CHANCEN</b><span>campus</span></div>
+  </div>
+  <div class="sec">CHANCENkurve-Schulung</div>
+  <nav class="nav" aria-label="Bereiche">
+   <a href="#fortschritt" data-v="fortschritt"><svg class="i" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>Fortschritt</a>
+   <a href="#auswertung" data-v="auswertung"><svg class="i" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>Kumulative Auswertung</a>
+   <a href="#export" data-v="export"><svg class="i" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>Export</a>
+  </nav>
+  <div class="sfoot">
+   <div style="font-size:12px">Aktuelle Ansicht</div>
+   <div class="view-sw"><button type="button" class="proto" aria-label="Vorherige Ansicht">‹</button><span class="pill">Schulungen</span><button type="button" class="proto" aria-label="Nächste Ansicht">›</button></div>
+   <div>Lena Vogt<br><span style="font-size:12px">Schulteambegleitung</span></div>
+   <div class="sbtns"><button type="button" class="proto" aria-label="Abmelden"><svg class="i" viewBox="0 0 24 24"><path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"/></svg></button><button type="button" class="proto" aria-label="Seitenleiste einklappen">‹</button></div>
+   <div class="prod">Ein Produkt von <b>CHANCENWERK</b><br>Impressum · Datenschutz<br>Version 4.1.0 · Prototyp</div>
+  </div>
+ </aside>
+
+ <main id="main">
+  <div class="head">
+   <div>
+    <h1 id="vh">Schulungsfortschritt</h1>
+    <p class="lead" id="vlead">Hier siehst du, wie weit die Lernkoordinationen (LeKos) und Schulkoordinationen (SchuKos) deiner KPFs im Selbstlernkurs „Einführung in die CHANCENkurve“ sind. Ein Kapitel ist bestanden, wenn im Quiz mindestens 80 % richtig sind, also 4 von 5 Fragen.</p>
+   </div>
+   <div class="demo"><b>Demo-Version</b>Alle Namen und Daten sind erfunden.</div>
+  </div>
+
+  <section class="card" aria-label="Filter">
+   <div class="filters">
+    <div><label for="fKpf">KPF</label><select id="fKpf"></select></div>
+    <div><label for="fRolle">Rolle</label><select id="fRolle"><option value="all">LeKos und SchuKos</option><option value="LeKo">Nur LeKos</option><option value="SchuKo">Nur SchuKos</option></select></div>
+    <div class="f-q only-f"><label for="fQ">Suche</label><input id="fQ" type="search" placeholder="Name suchen" autocomplete="off"></div>
+    <div class="only-f"><label for="fSort">Sortierung</label><select id="fSort"><option value="dring">Dringlichkeit (Standard)</option><option value="name">Name (A–Z)</option><option value="prog">Fortschritt (wenig zuerst)</option><option value="akt">Letzte Aktivität (älteste zuerst)</option></select></div>
+   </div>
+   <div class="chiprow only-f">
+    <div id="chips" style="display:flex;flex-wrap:wrap;gap:10px"></div>
+    <div class="acts">
+     <button type="button" class="obtn" id="remindAll"><svg class="i" viewBox="0 0 24 24"><path d="M6 16v-5a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg><span></span></button>
+     <button type="button" class="obtn" id="copyList"><svg class="i" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></svg>Liste kopieren</button>
+    </div>
+   </div>
+   <div class="legend only-f">
+    <span class="amp"><b>Ampel:</b> Grün = abgeschlossen · Orange = in Bearbeitung, zuletzt aktiv vor höchstens 14 Tagen · Rot = noch nicht begonnen oder länger als 14 Tage inaktiv</span>
+   </div>
+   <div class="legend only-f" aria-label="Legende Kapitelmarken">
+    <span><i class="tok pass" style="cursor:default">5/5</i>bestanden (bester Versuch)</span>
+    <span><i class="tok fail" style="cursor:default">3/5</i>noch nicht bestanden</span>
+    <span><i class="tok open" style="cursor:default"><svg class="i" viewBox="0 0 24 24"><path d="M8 5.5l10 6.5-10 6.5z"/></svg></i>freigeschaltet, noch kein Versuch</span>
+    <span><i class="tok lock" style="cursor:default"><svg class="i" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></i>gesperrt</span>
+   </div>
+  </section>
+
+  <section id="v-fortschritt" class="view">
+   <div class="card tablecard"><div class="scroll"><table class="grid">
+    <thead>
+     <tr><th rowspan="2" class="c-name">Name</th><th rowspan="2">Rolle</th><th rowspan="2">KPF</th><th colspan="6" class="grp">Kapitel-Quiz</th><th rowspan="2">Fortschritt</th><th rowspan="2">Status</th><th rowspan="2">Letzte Aktivität</th><th rowspan="2" class="c-act">Aktionen</th></tr>
+     <tr id="khead"></tr>
+    </thead>
+    <tbody id="rows"></tbody>
+   </table></div></div>
+   <p class="note" id="count"></p>
+  </section>
+
+  <section id="v-auswertung" class="view" hidden>
+   <h2 class="v-title" id="aTitle"></h2>
+   <p class="lead" id="aLead"></p>
+   <div class="tiles" id="aTiles"></div>
+   <div class="two">
+    <div class="card"><h3>Stand je KPF</h3><p class="sub">Anzahl Personen nach Ampelstatus</p><div class="keys"><span><i class="g"></i>Abgeschlossen</span><span><i class="o"></i>In Bearbeitung</span><span><i class="r"></i>Nicht begonnen oder inaktiv</span></div><div id="aKpf"></div></div>
+    <div class="card"><h3>Stand je Rolle</h3><p class="sub">Gleiche Ampel, nach Rolle getrennt</p><div class="keys"><span><i class="g"></i>Abgeschlossen</span><span><i class="o"></i>In Bearbeitung</span><span><i class="r"></i>Nicht begonnen oder inaktiv</span></div><div id="aRolle"></div></div>
+   </div>
+   <div class="card"><h3>Wie weit alle gekommen sind</h3><p class="sub">Personen, die das Quiz des Kapitels bestanden haben</p><div class="fun" id="aFun"></div></div>
+   <div class="card"><h3>Welche Quizze schwerfallen</h3><p class="sub" id="aHard"></p><div class="scroll"><table class="diff"><thead><tr><th>Kapitel</th><th class="n">Bestanden</th><th class="n">Im 1. Versuch</th><th class="n">Ø Versuche bis Bestehen</th><th class="n">Ø Punkte</th><th class="n">Hängen gerade fest</th></tr></thead><tbody id="aDiff"></tbody></table></div></div>
+  </section>
+
+  <section id="v-export" class="view" hidden>
+   <div class="card">
+    <h3>Fortschritt als Tabelle exportieren</h3>
+    <p class="sub">Der Export enthält alle Personen deiner Auswahl oben (KPF und Rolle), eine Zeile pro Person, Trennzeichen Semikolon für Excel.</p>
+    <div class="opts">
+     <label><input type="checkbox" id="eP" checked>Punkte je Kapitel</label>
+     <label><input type="checkbox" id="eV" checked>Versuche je Kapitel</label>
+     <label><input type="checkbox" id="eD" checked>Daten (Kursbeginn, letzte Aktivität, Abschluss)</label>
+    </div>
+    <pre id="ePre"></pre>
+    <div class="dacts"><button type="button" class="pbtn" id="eCopy"><svg class="i" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></svg>CSV kopieren</button><span class="note" id="eInfo" style="align-self:center;margin:0"></span></div>
+    <p class="note">Im CHANCENcampus lädt dieser Button die Datei direkt herunter. Im Prototyp kopierst du den Inhalt und fügst ihn in Excel ein.</p>
+   </div>
+  </section>
+
+  <details class="src">
+   <summary>Wie die Daten entstehen</summary>
+   <ul>
+    <li>Jedes der sechs Kapitel endet mit einem H5P-Quiz (Question Set, 5 Fragen, Bestehensgrenze 80 %). Das nächste Kapitel wird erst nach dem Bestehen freigeschaltet.</li>
+    <li>Der CHANCENcampus speichert jeden abgeschlossenen Quizdurchlauf als xAPI-Ergebnis mit Punktzahl. Bestanden heißt: mindestens 4 von 5. Angezeigt wird der beste Versuch.</li>
+    <li>Versuche = Anzahl abgeschlossener Quizdurchläufe je Kapitel. Letzte Aktivität = letzter Kapitelaufruf oder Quizversuch.</li>
+    <li>STBs sehen nur die LeKos und SchuKos der KPFs, die ihnen zugeordnet sind. Einzelne Antworten werden nicht angezeigt.</li>
+   </ul>
+  </details>
+ </main>
+</div>
+
+<div class="scrim" id="dScrim" hidden><aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="dName" id="drawer"></aside></div>
+<div class="scrim center" id="mScrim" hidden><div class="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle" id="modal"></div></div>
+<div class="tip" id="tip" hidden></div>
+<div class="toast" id="toast" role="status" hidden></div>
+<button type="button" class="totop" id="totop" aria-label="Nach oben" hidden><svg class="i" viewBox="0 0 24 24"><path d="M6 15l6-6 6 6"/></svg></button>
+
+<script>
+{
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const ic=d=>`<svg class="i" viewBox="0 0 24 24">${d}</svg>`;
+const I={play:'<path d="M8 5.5l10 6.5-10 6.5z"/>',lock:'<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',chart:'<path d="M4 20h16M7 16v-5M12 16V6M17 16v-8"/>',bell:'<path d="M6 16v-5a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 20.5a2 2 0 0 0 4 0"/>',x:'<path d="M6 6l12 12M18 6L6 18"/>',ok:'<circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.7 2.7L16 10"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',alert:'<path d="M12 3l10 18H2z"/><path d="M12 10v4M12 17.5v.5"/>',copy:'<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/>',doc:'<path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4M10 13h5M10 17h5"/>'};
+const SI={g:I.ok,o:I.clock,r:I.alert};
+const T=14,DAY=864e5,today=new Date();today.setHours(12,0,0,0);
+const pad=n=>String(n).padStart(2,"0");
+const dAgo=n=>new Date(today.getTime()-n*DAY);
+const fmt=n=>{const d=dAgo(n);return `${pad(d.getDate())}.${pad(d.getMonth()+1)}.${d.getFullYear()}`};
+const fmtS=n=>{const d=dAgo(n);return `${pad(d.getDate())}.${pad(d.getMonth()+1)}.`};
+const rel=n=>n==null?"Noch nie":n===0?"heute":n===1?"gestern":`vor ${n} Tagen`;
+const dec=x=>x.toLocaleString("de-DE",{minimumFractionDigits:1,maximumFractionDigits:1});
+const KPF=[{id:"D1",name:"KPF Demo 1",schule:"Gemeinschaftsschule Am Park"},{id:"D2",name:"KPF Demo 2",schule:"Realschule plus Lindenhof"},{id:"D3",name:"KPF Demo 3",schule:"Gesamtschule Nordstadt"},{id:"D4",name:"KPF Demo 4",schule:"Oberschule Am Hafen"}];
+const KM=Object.fromEntries(KPF.map(k=>[k.id,k]));
+const CH=["Warum wir das machen","Wer, was, wann","Vorbereitung vor Ort","Die Testsituation gestalten","Feedback und Ergebnisse","Vom Ergebnis zur Förderung"];
+const ROLE={LeKo:"Lernkoordination",SchuKo:"Schulkoordination"};
+// Vorname, Nachname, Rolle, KPF, bestandene Kapitel, Versuche im aktuellen Kapitel, bester Wert dort, Tage seit letzter Aktivität
+const RAW=[["Sophie","Krüger","SchuKo","D1",6,0,0,9],["Malik","Yilmaz","LeKo","D1",6,0,0,3],["Hannah","Schulz","LeKo","D1",3,2,3,5],["Jonas","Becker","LeKo","D1",0,0,0,null],["Aylin","Demir","LeKo","D1",1,1,2,21],["Leon","Fischer","LeKo","D1",4,0,0,1],
+["Markus","Weber","SchuKo","D2",2,0,0,18],["Elif","Arslan","LeKo","D2",6,0,0,12],["Tim","Hoffmann","LeKo","D2",0,0,0,null],["Clara","Neumann","LeKo","D2",5,1,3,2],["Noah","Richter","LeKo","D2",0,0,0,6],["Mira","Schäfer","LeKo","D2",6,0,0,30],
+["Daniel","Wagner","SchuKo","D3",6,0,0,20],["Fatma","Öztürk","LeKo","D3",1,3,2,4],["Lukas","Braun","LeKo","D3",0,0,0,null],["Paula","Zimmermann","LeKo","D3",3,0,0,27],["Yusuf","Kaya","LeKo","D3",6,0,0,7],
+["Anna","Lehmann","SchuKo","D4",4,1,3,10],["Ben","Schmitt","LeKo","D4",1,2,3,16],["Sara","Haddad","LeKo","D4",6,0,0,1],["Felix","Koch","LeKo","D4",0,0,0,null],["Emma","Wolf","LeKo","D4",2,0,0,8]];
+const DIFF=[.1,.6,.25,.15,.45,.1];
+const rng=seed=>()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
+const P=RAW.map((r,i)=>{
+ const R=rng(i*7919+13),[vn,nn,rolle,kpf,p,ca,cb,d]=r;
+ const start=d==null?null:d+p*3+2+Math.floor(R()*4);
+ const den=(p<6&&ca)?p+1:p;
+ const ch=CH.map((_,c)=>{
+  if(c<p){let att=1+(R()<DIFF[c]?1:0);if(att>1&&R()<DIFF[c]/2)att++;const score=att>1?(R()<.7?4:5):(R()<.6?5:4);return{st:"pass",score,att,ago:Math.round(start-(start-d)*(c+1)/den)}}
+  if(c===p)return ca?{st:"fail",score:cb,att:ca,ago:d}:{st:"open",att:0};
+  return{st:"lock",att:0};
+ });
+ const x={id:i,vn,nn,rolle,kpf,p,d,start,ch,name:vn+" "+nn,doneAgo:p===6?d:null};
+ x.st=p===6?{k:"g",l:"Abgeschlossen",s:"am "+fmt(d)}:d==null?{k:"r",l:"Nicht begonnen"}:d>T?{k:"r",l:"Inaktiv",s:`seit ${d} Tagen`}:{k:"o",l:"In Bearbeitung",s:`Kapitel ${p+1} von 6`};
+ x.urg=x.st.k==="r"?(d==null?1e4:1e3+d):x.st.k==="o"?100+(6-p)*10+d:-d;
+ return x;
+});
+const F={kpf:"all",rolle:"all",q:"",sort:"dring",amp:"all"};
+let view="fortschritt";
+const scope=()=>P.filter(x=>(F.kpf==="all"||x.kpf===F.kpf)&&(F.rolle==="all"||x.rolle===F.rolle));
+const base=()=>{const q=F.q.trim().toLowerCase();return scope().filter(x=>!q||x.name.toLowerCase().includes(q))};
+const SORT={dring:(a,b)=>b.urg-a.urg,name:(a,b)=>a.nn.localeCompare(b.nn,"de"),prog:(a,b)=>a.p-b.p||b.urg-a.urg,akt:(a,b)=>(b.d??1e4)-(a.d??1e4)};
+const tipOf=(x,c)=>{const o=x.ch[c],h=`Kapitel ${c+1}: ${CH[c]}`;
+ if(o.st==="pass")return[h,`Bestanden mit ${o.score} von 5\n${o.att} ${o.att>1?"Versuche":"Versuch"} · ${fmt(o.ago)}`];
+ if(o.st==="fail")return[h,`Noch nicht bestanden\nBester Versuch: ${o.score} von 5 · ${o.att} ${o.att>1?"Versuche":"Versuch"}`];
+ if(o.st==="open")return[h,"Freigeschaltet, noch kein Quizversuch"];
+ return[h,`Gesperrt, bis Kapitel ${c} bestanden ist`]};
+const tok=(x,c)=>{const o=x.ch[c],[t,b]=tipOf(x,c),inner=o.st==="pass"||o.st==="fail"?`${o.score}/5`:ic(o.st==="open"?I.play:I.lock);
+ return `<span class="tok ${o.st}" tabindex="0" data-tt="${esc(t)}" data-tip="${esc(b)}" aria-label="${esc(t+". "+b.replace(/\n/g,". "))}">${inner}</span>`};
+const stCell=x=>`<span class="st ${x.st.k}">${ic(SI[x.st.k])}<span>${esc(x.st.l)}${x.st.s?`<small>${esc(x.st.s)}</small>`:""}</span></span>`;
+
+$("#fKpf").innerHTML=`<option value="all">Alle meine KPFs (${KPF.length})</option>`+KPF.map(k=>`<option value="${k.id}">${esc(k.name)} · ${esc(k.schule)}</option>`).join("");
+$("#khead").innerHTML=CH.map((t,c)=>`<th class="k" tabindex="0" data-tt="Kapitel ${c+1}" data-tip="${esc(t)}">${c+1}</th>`).join("");
+
+function renderF(){
+ const B=base(),cnt={all:B.length,r:0,o:0,g:0};B.forEach(x=>cnt[x.st.k]++);
+ const lab={all:"Alle",r:"Rot",o:"Orange",g:"Grün"};
+ $("#chips").innerHTML=["all","r","o","g"].map(k=>`<button type="button" class="chip ${k}" data-amp="${k}" aria-pressed="${F.amp===k}">${lab[k]} (${cnt[k]})</button>`).join("");
+ const L=B.filter(x=>F.amp==="all"||x.st.k===F.amp).sort(SORT[F.sort]);
+ $("#rows").innerHTML=L.length?L.map(x=>`<tr class="${x.st.k}">
+  <td class="c-name"><button type="button" class="name" data-open="${x.id}">${esc(x.name)}</button></td>
+  <td class="c-role"><span class="role" title="${ROLE[x.rolle]}">${x.rolle}</span></td>
+  <td class="kpf">${esc(KM[x.kpf].name)}</td>
+  ${x.ch.map((_,c)=>`<td class="k t">${tok(x,c)}</td>`).join("")}
+  <td class="t c-prog"><span class="prog">${x.p}/6<span class="meter" aria-hidden="true"><i style="width:${x.p/6*100}%"></i></span></span></td>
+  <td class="t c-st">${stCell(x)}</td>
+  <td class="t c-akt" style="white-space:nowrap"><span class="mlbl">Letzte Aktivität: </span>${rel(x.d)}</td>
+  <td class="c-act"><button type="button" class="ibtn" data-open="${x.id}" aria-label="Details zu ${esc(x.name)}" data-tt="Details" data-tip="Kapitel, Punkte und Versuche">${ic(I.chart)}</button><button type="button" class="ibtn" data-remind="${x.id}" aria-label="Erinnerung an ${esc(x.name)}" ${x.p===6?"disabled":`data-tt="Erinnern" data-tip="Nachricht an ${esc(x.vn)} vorbereiten"`}>${ic(I.bell)}</button></td></tr>`).join("")
+ :`<tr><td colspan="13" class="empty">Keine Personen für diese Auswahl.</td></tr>`;
+ const red=B.filter(x=>x.st.k==="r").length;
+ $("#remindAll span").textContent=`Erinnerung an alle Roten (${red})`;$("#remindAll").disabled=!red;
+ $("#count").textContent=`${L.length} von ${B.length} Personen angezeigt · Stand: heute, ${new Date().toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit"})} Uhr`;
+}
+
+const seg=(lbl,sub,G)=>{const n=G.length,c={g:0,o:0,r:0};G.forEach(x=>c[x.st.k]++);const nm={g:"Abgeschlossen",o:"In Bearbeitung",r:"Nicht begonnen oder inaktiv"};
+ return `<div class="segrow"><div class="seglbl">${esc(lbl)}${sub?`<small>${esc(sub)}</small>`:""}</div><div class="seg" role="img" aria-label="${esc(lbl)}: ${c.g} abgeschlossen, ${c.o} in Bearbeitung, ${c.r} nicht begonnen oder inaktiv">${["g","o","r"].filter(k=>c[k]).map(k=>`<span class="b ${k}" style="flex-grow:${c[k]}" tabindex="0" data-tt="${nm[k]}" data-tip="${c[k]} von ${n} · ${Math.round(c[k]/n*100)} %">${c[k]}</span>`).join("")}</div><div class="segn">${n}</div></div>`};
+function renderA(){
+ const S=scope(),n=S.length,c={g:0,o:0,r:0};S.forEach(x=>c[x.st.k]++);
+ if(!n){$("#aTitle").textContent="Keine Personen für diese Auswahl";["#aLead","#aTiles","#aKpf","#aRolle","#aFun","#aDiff","#aHard"].forEach(s=>$(s).innerHTML="");return}
+ $("#aTitle").textContent=`${c.g} von ${n} haben die Schulung abgeschlossen, ${c.r} ${c.r===1?"braucht":"brauchen"} einen Anstoß`;
+ $("#aLead").textContent=`Auswahl: ${F.kpf==="all"?"alle deine KPFs":KM[F.kpf].name}, ${F.rolle==="all"?"LeKos und SchuKos":F.rolle==="LeKo"?"nur LeKos":"nur SchuKos"}.`;
+ const passed=S.flatMap(x=>x.ch.filter(o=>o.st==="pass")),avgA=passed.length?passed.reduce((a,o)=>a+o.att,0)/passed.length:0,avgS=passed.length?passed.reduce((a,o)=>a+o.score,0)/passed.length:0,recent=S.filter(x=>x.p===6&&x.d<=7).length;
+ $("#aTiles").innerHTML=`<div class="tile hero"><div class="l">Abgeschlossen</div><div class="v">${Math.round(c.g/n*100)} %</div><div class="d">${recent?`+${recent} in den letzten 7 Tagen`:"keine neuen Abschlüsse in den letzten 7 Tagen"}</div></div>
+ <div class="tile"><div class="l">In Bearbeitung</div><div class="v">${c.o} <small>Personen</small></div></div>
+ <div class="tile"><div class="l">Ø Versuche bis zum Bestehen</div><div class="v">${dec(avgA)}</div></div>
+ <div class="tile"><div class="l">Ø Punkte im besten Versuch</div><div class="v">${dec(avgS)} <small>von 5</small></div></div>`;
+ $("#aKpf").innerHTML=KPF.filter(k=>S.some(x=>x.kpf===k.id)).map(k=>seg(k.name,k.schule,S.filter(x=>x.kpf===k.id))).join("");
+ $("#aRolle").innerHTML=["SchuKo","LeKo"].filter(r=>S.some(x=>x.rolle===r)).map(r=>seg(r+"s",ROLE[r],S.filter(x=>x.rolle===r))).join("");
+ const st=CH.map((t,i)=>{const pp=S.map(x=>x.ch[i]).filter(o=>o.st==="pass");return{t,i,n:pp.length,first:pp.filter(o=>o.att===1).length,att:pp.length?pp.reduce((a,o)=>a+o.att,0)/pp.length:0,sc:pp.length?pp.reduce((a,o)=>a+o.score,0)/pp.length:0,stuck:S.filter(x=>x.ch[i].st==="fail").length}});
+ $("#aFun").innerHTML=st.map(s=>`<div class="lb"><b>${s.i+1}</b>${esc(s.t)}</div><div class="tr"><span class="fill" style="width:calc((100% - 92px) * ${s.n/n})" tabindex="0" data-tt="Kapitel ${s.i+1}: ${esc(s.t)}" data-tip="${s.n} von ${n} bestanden · ${Math.round(s.n/n*100)} %"></span><span class="val">${s.n} von ${n}</span></div>`).join("");
+ const cand=st.filter(s=>s.n),hard=cand.length?cand.reduce((a,b)=>b.att>a.att?b:a):null;
+ $("#aHard").textContent=hard&&hard.att>1?`Im Quiz zu Kapitel ${hard.i+1} „${hard.t}“ brauchen die meisten mehr als einen Anlauf: im Schnitt ${dec(hard.att)} Versuche, nur ${Math.round(hard.first/hard.n*100)} % bestehen im ersten Versuch. Ein Hinweis für die Überarbeitung von Input oder Fragen.`:"Alle Quizze werden bisher meist im ersten Versuch bestanden.";
+ $("#aDiff").innerHTML=st.map(s=>`<tr class="${hard&&s.i===hard.i&&hard.att>1?"hard":""}"><td><b>${s.i+1}</b> ${esc(s.t)}${hard&&s.i===hard.i&&hard.att>1?`<span class="flag">meiste Versuche</span>`:""}</td><td class="n">${s.n}</td><td class="n">${s.n?Math.round(s.first/s.n*100)+" %":"–"}</td><td class="n">${s.n?dec(s.att):"–"}</td><td class="n">${s.n?dec(s.sc):"–"}</td><td class="n">${s.stuck}</td></tr>`).join("");
+ requestAnimationFrame(fitSeg);
+}
+function fitSeg(){$$(".seg .b").forEach(b=>{b.classList.remove("nolbl");if(b.scrollWidth>b.clientWidth+1||b.clientWidth<22)b.classList.add("nolbl")})}
+const ro=new ResizeObserver(()=>{if(view==="auswertung")fitSeg()});ro.observe($("#main"));
+
+function csv(L,o){
+ const h=["Nachname","Vorname","Rolle","KPF","Schule","Status","Kapitel bestanden"];
+ if(o.p)CH.forEach((_,c)=>h.push(`K${c+1} Punkte`));if(o.v)CH.forEach((_,c)=>h.push(`K${c+1} Versuche`));if(o.d)h.push("Kurs begonnen","Letzte Aktivität","Abgeschlossen am");
+ const q=v=>/[;"\n]/.test(String(v))?`"${String(v).replace(/"/g,'""')}"`:String(v);
+ return [h,...L.map(x=>{const r=[x.nn,x.vn,ROLE[x.rolle],KM[x.kpf].name,KM[x.kpf].schule,x.st.l+(x.st.s?" "+x.st.s:""),x.p];
+  if(o.p)x.ch.forEach(c=>r.push(c.st==="pass"||c.st==="fail"?c.score:""));if(o.v)x.ch.forEach(c=>r.push(c.att||""));
+  if(o.d)r.push(x.start==null?"":fmt(x.start),x.d==null?"":fmt(x.d),x.p===6?fmt(x.d):"");return r})].map(r=>r.map(q).join(";")).join("\n")}
+const eOpt=()=>({p:$("#eP").checked,v:$("#eV").checked,d:$("#eD").checked});
+function renderE(){const S=scope().sort(SORT.name),t=csv(S,eOpt()),lines=t.split("\n");$("#ePre").textContent=lines.slice(0,9).join("\n")+(lines.length>9?`\n… ${lines.length-9} weitere Zeilen`:"");$("#eInfo").textContent=`${S.length} Personen, ${lines[0].split(";").length} Spalten`}
+
+function render(){if(view==="fortschritt")renderF();else if(view==="auswertung")renderA();else renderE()}
+
+// Detailansicht
+let lastFocus=null;
+function openD(id){
+ const x=P[id],k=KM[x.kpf],passed=x.ch.filter(o=>o.st==="pass");lastFocus=document.activeElement;
+ const row=(o,c)=>{const m=o.st==="pass"?`Bestanden am ${fmt(o.ago)} · ${o.att} ${o.att>1?"Versuche":"Versuch"}`:o.st==="fail"?`Noch nicht bestanden · ${o.att} ${o.att>1?"Versuche":"Versuch"}`:o.st==="open"?"Freigeschaltet, noch kein Quizversuch":`Gesperrt, bis Kapitel ${c} bestanden ist`;
+  const dots=o.st==="pass"||o.st==="fail"?`<div class="dots" aria-label="${o.score} von 5 Punkten">${[0,1,2,3,4].map(j=>`<i class="${j<o.score?(o.st==="pass"?"on":"onf"):""}"></i>`).join("")}<span>${o.score}/5</span></div>`:"";
+  return `<li><span class="num ${o.st}">${o.st==="lock"?ic(I.lock):c+1}</span><div><div class="t">${esc(CH[c])}</div><div class="m">${m}</div></div>${dots}</li>`};
+ $("#drawer").innerHTML=`<button type="button" class="xbtn" id="dClose" aria-label="Schließen">${ic(I.x)}</button>
+  <div class="d-meta">${ROLE[x.rolle]} · ${esc(k.name)} · ${esc(k.schule)}</div><h2 id="dName">${esc(x.name)}</h2>
+  <span class="badge ${x.st.k}">${ic(SI[x.st.k])}${esc(x.st.l)}${x.st.s?" "+esc(x.st.s):""}</span>
+  <div class="facts"><div>Fortschritt<b>${x.p} von 6 Kapiteln</b></div><div>Ø Punkte (bestandene Quizze)<b>${passed.length?dec(passed.reduce((a,o)=>a+o.score,0)/passed.length)+" von 5":"–"}</b></div><div>Kurs begonnen<b>${x.start==null?"–":fmt(x.start)}</b></div><div>Letzte Aktivität<b>${rel(x.d)}</b></div></div>
+  <h3 style="margin:0;font-size:16px">Kapitel und Quizze</h3><p class="note" style="margin:2px 0 0">Punkte aus dem besten Versuch, bestanden ab 4 von 5.</p>
+  <ol class="chl">${x.ch.map(row).join("")}</ol>
+  <div class="dacts">${x.p===6?`<button type="button" class="pbtn" id="dCert">${ic(I.doc)}Teilnahmebestätigung ansehen</button>`:`<button type="button" class="pbtn" data-remind="${x.id}">${ic(I.bell)}Erinnerung senden</button>`}</div><div id="dCertBox"></div>`;
+ $("#dScrim").hidden=false;$("#dClose").focus();
+ $("#dClose").onclick=closeD;
+ const cb=$("#dCert");if(cb)cb.onclick=()=>{$("#dCertBox").innerHTML=`<div class="cert"><div class="d-meta">Teilnahmebestätigung</div><div class="big">${esc(x.name)}</div><p>hat den Selbstlernkurs <b>Einführung in die CHANCENkurve</b> erfolgreich abgeschlossen.</p><p style="margin:0">${passed.reduce((a,o)=>a+o.score,0)} von 30 Fragen richtig · ${fmt(x.d)}</p></div>`;cb.disabled=true;$("#dCertBox").scrollIntoView({behavior:"smooth",block:"nearest"})};
+}
+function closeD(){$("#dScrim").hidden=true;if(lastFocus)lastFocus.focus()}
+
+// Erinnerung
+function openM(ids){
+ const L=ids.map(i=>P[i]),one=L.length===1,x=L[0];let msg;
+ if(one&&x.d==null)msg=`Hallo ${x.vn},\n\nder Selbstlernkurs „Einführung in die CHANCENkurve“ wartet im CHANCENcampus auf dich. Er dauert etwa 75 Minuten, und du kannst ihn jederzeit in Etappen machen.\n\nDu findest ihn unter „Schulungen“. Wenn etwas hakt, melde dich gern bei mir.\n\nViele Grüße\nLena`;
+ else if(one)msg=`Hallo ${x.vn},\n\n${x.p?`im Selbstlernkurs „Einführung in die CHANCENkurve“ hast du schon ${x.p} von 6 Kapiteln geschafft, super!`:"du hast den Selbstlernkurs „Einführung in die CHANCENkurve“ schon begonnen, super!"} Als Nächstes ist Kapitel ${x.p+1} „${CH[x.p]}“ dran. Magst du in den nächsten Tagen weitermachen?\n\nWenn etwas hakt, melde dich gern bei mir.\n\nViele Grüße\nLena`;
+ else msg=`Hallo zusammen,\n\nim CHANCENcampus wartet der Selbstlernkurs „Einführung in die CHANCENkurve“ auf euch. Er dauert etwa 75 Minuten, und ihr könnt ihn jederzeit in Etappen machen. Wer schon angefangen hat: Ihr macht einfach dort weiter, wo ihr aufgehört habt.\n\nIhr findet ihn unter „Schulungen“. Wenn etwas hakt, meldet euch gern bei mir.\n\nViele Grüße\nLena`;
+ lastFocus=document.activeElement;
+ $("#modal").innerHTML=`<button type="button" class="xbtn" id="mClose" aria-label="Schließen">${ic(I.x)}</button><h2 id="mTitle">Erinnerung senden</h2>
+  <div class="d-meta">An ${L.length} ${one?"Person":"Personen"}:</div><div class="rcpt">${L.map(p=>`<span>${esc(p.name)}</span>`).join("")}</div>
+  <label for="mText" class="d-meta" style="display:block;font-weight:700">Nachricht</label><textarea id="mText">${esc(msg)}</textarea>
+  <p class="note">Im CHANCENcampus ginge die Erinnerung als E-Mail an die hinterlegten Adressen. Im Prototyp wird nichts versendet.</p>
+  <div class="dacts"><button type="button" class="pbtn" id="mCopy">${ic(I.copy)}Text kopieren</button><button type="button" class="obtn" id="mCancel">Schließen</button></div>`;
+ $("#mScrim").hidden=false;$("#mText").focus();
+ $("#mClose").onclick=$("#mCancel").onclick=closeM;
+ $("#mCopy").onclick=()=>copy($("#mText").value,"Text kopiert. Im Prototyp wird nichts versendet.");
+}
+function closeM(){$("#mScrim").hidden=true;if(lastFocus&&document.contains(lastFocus))lastFocus.focus()}
+
+let tt;function toast(t){const e=$("#toast");e.textContent=t;e.hidden=false;clearTimeout(tt);tt=setTimeout(()=>e.hidden=true,3200)}
+async function copy(t,ok){try{await navigator.clipboard.writeText(t);toast(ok)}catch(e){toast("Kopieren nicht möglich. Bitte Text markieren und mit Strg+C kopieren.")}}
+
+// Tooltip
+const tip=$("#tip");
+function showTip(el){const t=document.createElement("b");t.textContent=el.dataset.tt||"";tip.replaceChildren(t,document.createTextNode(el.dataset.tip||""));tip.hidden=false;
+ const r=el.getBoundingClientRect(),w=tip.offsetWidth,h=tip.offsetHeight;let x=r.left+r.width/2-w/2,y=r.top-h-8;if(y<8)y=r.bottom+8;x=Math.max(8,Math.min(x,innerWidth-w-8));tip.style.left=x+"px";tip.style.top=y+"px"}
+const hideTip=()=>tip.hidden=true;
+document.addEventListener("pointerover",e=>{const el=e.target.closest("[data-tip]");el?showTip(el):hideTip()});
+document.addEventListener("focusin",e=>{const el=e.target.closest("[data-tip]");el?showTip(el):hideTip()});
+document.addEventListener("scroll",hideTip,true);
+
+// Ereignisse
+document.addEventListener("click",e=>{
+ const a=e.target.closest("[data-amp]");if(a){F.amp=a.dataset.amp;renderF();return}
+ const o=e.target.closest("[data-open]");if(o){openD(+o.dataset.open);return}
+ const m=e.target.closest("[data-remind]");if(m&&!m.disabled){openM([+m.dataset.remind]);return}
+ if(e.target.closest(".proto"))toast("Im Prototyp ohne Funktion.");
+ if(e.target===$("#dScrim"))closeD();if(e.target===$("#mScrim"))closeM();
+});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){if(!$("#mScrim").hidden)closeM();else if(!$("#dScrim").hidden)closeD()}});
+$("#fKpf").onchange=e=>{F.kpf=e.target.value;render()};
+$("#fRolle").onchange=e=>{F.rolle=e.target.value;render()};
+$("#fQ").oninput=e=>{F.q=e.target.value;renderF()};
+$("#fSort").onchange=e=>{F.sort=e.target.value;renderF()};
+$("#remindAll").onclick=()=>openM(base().filter(x=>x.st.k==="r").sort(SORT.name).map(x=>x.id));
+$("#copyList").onclick=()=>copy(csv(base().filter(x=>F.amp==="all"||x.st.k===F.amp).sort(SORT[F.sort]),{p:true,v:false,d:true}),"Liste als CSV kopiert. In Excel einfügen.");
+["#eP","#eV","#eD"].forEach(s=>$(s).onchange=renderE);
+$("#eCopy").onclick=()=>copy(csv(scope().sort(SORT.name),eOpt()),"CSV kopiert. In Excel einfügen.");
+const TOP=$("#totop");addEventListener("scroll",()=>TOP.hidden=scrollY<400,{passive:true});TOP.onclick=()=>scrollTo({top:0,behavior:"smooth"});
+
+const TITLES={fortschritt:"Schulungsfortschritt",auswertung:"Kumulative Auswertung",export:"Export"};
+const LEADS={fortschritt:$("#vlead").textContent,auswertung:"Die Zusammenfassung für deine Auswahl: wie viele fertig sind, wie weit alle im Kurs gekommen sind und welche Quizze schwerfallen.",export:"Exportiere den Schulungsstand deiner KPFs als Tabelle, zum Beispiel für Teamgespräche oder das Reporting."};
+function route(){const h=location.hash.slice(1);view=TITLES[h]?h:"fortschritt";
+ $$(".view").forEach(v=>v.hidden=v.id!=="v-"+view);$$(".only-f").forEach(e=>e.hidden=view!=="fortschritt");
+ $$(".nav a").forEach(a=>a.dataset.v===view?a.setAttribute("aria-current","page"):a.removeAttribute("aria-current"));
+ $("#vh").textContent=TITLES[view];$("#vlead").textContent=LEADS[view];$(".filters").classList.toggle("short",view!=="fortschritt");hideTip();render()}
+addEventListener("hashchange",route);route();
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,477 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>CHANCENkurve Selbstlernkurs</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap">
+<style>
+/* Layout: grüner Kopfbereich, links Kapitelleiste mit Fortschritt, rechts Lernbereich; mobil einspaltig */
+:root{
+  --lime:#D3DF90; --lime-soft:#EFF4CF; --lime-deep:#B0C64A;
+  --pine:#006359; --pine-ink:#004A43; --amber:#E28807;
+  --ink:#3F4440; --muted:#69706A; --line:#D9DEC4;
+  --bg:#F7F9EC; --card:#FFFFFF; --on-pine:#FFFFFF;
+  --ok:#2E7D4F; --ok-bg:#E3F2E8; --bad:#B4462E; --bad-bg:#FBE7E1;
+  --f:"Montserrat",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --lime:#3B4A1F; --lime-soft:#26301A; --lime-deep:#8FA33A;
+  --pine:#3FB3A2; --pine-ink:#8ED8CC; --amber:#F2A33A;
+  --ink:#E7EBDD; --muted:#A7AE9E; --line:#3A4232;
+  --bg:#171C14; --card:#20271B; --on-pine:#0E1A17;
+  --ok:#7FD39E; --ok-bg:#1E3527; --bad:#F09A84; --bad-bg:#3A221C; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --lime:#3B4A1F; --lime-soft:#26301A; --lime-deep:#8FA33A;
+  --pine:#3FB3A2; --pine-ink:#8ED8CC; --amber:#F2A33A;
+  --ink:#E7EBDD; --muted:#A7AE9E; --line:#3A4232;
+  --bg:#171C14; --card:#20271B; --on-pine:#0E1A17;
+  --ok:#7FD39E; --ok-bg:#1E3527; --bad:#F09A84; --bad-bg:#3A221C; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f);font-size:16px;line-height:1.55}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header.top{background:var(--lime)}
+header.top .wrap{padding-block:28px 26px;display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between}
+.brand{display:flex;align-items:center;gap:14px}
+.brand svg{flex:none}
+.brand small{display:block;font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--pine-ink)}
+.brand h1{margin:0;font-size:clamp(22px,3.2vw,30px);font-weight:800;line-height:1.15;text-wrap:balance}
+.meter{min-width:220px;flex:1;max-width:340px}
+.meter .lbl{display:flex;justify-content:space-between;font-size:13px;font-weight:600;color:var(--pine-ink);font-variant-numeric:tabular-nums}
+.bar{height:10px;border-radius:5px;background:var(--lime-soft);overflow:hidden;margin-top:6px}
+.bar i{display:block;height:100%;background:var(--pine);width:0;transition:width .4s}
+.layout{display:grid;grid-template-columns:280px 1fr;gap:28px;padding-block:28px 64px}
+@media (max-width:860px){.layout{grid-template-columns:1fr}}
+nav.chapters{display:flex;flex-direction:column;gap:8px;align-self:start;position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px)}
+@media (max-width:860px){nav.chapters{position:static;flex-direction:row;overflow-x:auto;padding-bottom:4px}}
+.ch{display:flex;gap:12px;align-items:center;text-align:left;width:100%;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;font:inherit;color:inherit;cursor:pointer}
+@media (max-width:860px){.ch{min-width:220px}}
+.ch:disabled{cursor:not-allowed;opacity:.55}
+.ch[aria-current="true"]{border-color:var(--pine);box-shadow:0 0 0 2px var(--pine) inset}
+.ch .n{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:14px;background:var(--lime-soft);color:var(--pine-ink)}
+.ch.done .n{background:var(--pine);color:var(--on-pine)}
+.ch .t{font-size:14px;font-weight:600;line-height:1.3}
+.ch .s{font-size:12px;color:var(--muted)}
+main{min-width:0}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:clamp(20px,4vw,40px)}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--amber)}
+h2{font-size:clamp(24px,3vw,32px);line-height:1.2;margin:.2em 0 .5em;text-wrap:balance}
+h3{font-size:19px;color:var(--pine-ink);margin:1.6em 0 .5em}
+.goals{background:var(--lime-soft);border-radius:14px;padding:14px 18px;margin:0 0 8px}
+.goals b{color:var(--pine-ink)}
+.prose{max-width:68ch}
+.prose ul,.prose ol{padding-left:1.3em}
+.prose li{margin:.3em 0}
+.say{border-left:4px solid var(--amber);background:var(--bg);border-radius:0 12px 12px 0;padding:14px 18px;font-style:italic;margin:16px 0}
+.say b{font-style:normal;display:block;font-size:13px;color:var(--amber);margin-bottom:4px}
+.tbl{overflow-x:auto;margin:14px 0}
+table{border-collapse:collapse;width:100%;min-width:460px;font-size:15px}
+th{background:var(--pine);color:var(--on-pine);text-align:left;padding:10px 12px;font-weight:600}
+td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:nth-child(even) td{background:var(--bg)}
+.tag{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;background:var(--amber);color:#fff;margin-left:6px;vertical-align:middle}
+.placeholder{border:2px dashed var(--lime-deep);border-radius:14px;padding:22px;text-align:center;color:var(--muted);margin:14px 0}
+.actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px;align-items:center}
+.btn{font:inherit;font-weight:700;font-size:15px;border-radius:12px;padding:12px 22px;border:2px solid var(--pine);background:var(--pine);color:var(--on-pine);cursor:pointer}
+.btn.ghost{background:transparent;color:var(--pine-ink)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn:focus-visible,.ch:focus-visible,.opt:focus-visible,.chip:focus-visible,.bucket:focus-visible,.mini:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+/* Quiz */
+.qhead{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center}
+.dots{display:flex;gap:6px}
+.dots i{width:12px;height:12px;border-radius:50%;background:var(--line)}
+.dots i.cur{background:var(--amber)}
+.dots i.r{background:var(--ok)}.dots i.w{background:var(--bad)}
+.qtype{font-size:13px;font-weight:600;color:var(--muted)}
+.qtext{font-size:20px;font-weight:600;line-height:1.4;margin:14px 0 18px;max-width:60ch}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{display:flex;gap:12px;align-items:flex-start;text-align:left;font:inherit;color:inherit;background:var(--bg);border:2px solid var(--line);border-radius:14px;padding:14px 16px;cursor:pointer}
+.opt .box{flex:none;width:22px;height:22px;border:2px solid var(--muted);border-radius:6px;margin-top:2px;display:grid;place-items:center}
+.opt.single .box{border-radius:50%}
+.opt[aria-pressed="true"]{border-color:var(--pine);background:var(--lime-soft)}
+.opt[aria-pressed="true"] .box{background:var(--pine);border-color:var(--pine)}
+.opt[aria-pressed="true"] .box::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--on-pine)}
+.opt.ok{border-color:var(--ok);background:var(--ok-bg)}
+.opt.bad{border-color:var(--bad);background:var(--bad-bg)}
+.hint{font-size:13px;color:var(--muted);margin-top:-8px;margin-bottom:14px}
+.pool{display:flex;flex-wrap:wrap;gap:10px;min-height:56px;padding:12px;border-radius:14px;background:var(--bg);border:2px dashed var(--line)}
+.chip{font:inherit;font-size:14px;font-weight:500;text-align:left;background:var(--card);color:var(--ink);border:2px solid var(--line);border-radius:12px;padding:10px 12px;cursor:grab;max-width:100%}
+.chip[aria-pressed="true"]{border-color:var(--amber);box-shadow:0 0 0 3px color-mix(in srgb,var(--amber) 30%,transparent)}
+.chip.ok{border-color:var(--ok);background:var(--ok-bg)}.chip.bad{border-color:var(--bad);background:var(--bad-bg)}
+.buckets{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:14px}
+.bucket{border:2px solid var(--line);border-radius:14px;padding:12px;min-height:110px;background:var(--card);display:flex;flex-direction:column;gap:8px;cursor:pointer;text-align:left;font:inherit;color:inherit}
+.bucket h4{margin:0;font-size:14px;color:var(--pine-ink)}
+.bucket.over{border-color:var(--pine);background:var(--lime-soft)}
+.orderlist{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px}
+.orderlist li{display:flex;align-items:center;gap:12px;background:var(--bg);border:2px solid var(--line);border-radius:14px;padding:10px 12px;cursor:grab}
+.orderlist li.ok{border-color:var(--ok);background:var(--ok-bg)}.orderlist li.bad{border-color:var(--bad);background:var(--bad-bg)}
+.orderlist .pos{flex:none;width:28px;height:28px;border-radius:50%;background:var(--pine);color:var(--on-pine);display:grid;place-items:center;font-weight:700;font-size:13px}
+.orderlist .txt{flex:1;min-width:0}
+.mini{font:inherit;width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.mini:disabled{opacity:.3}
+.fb{margin-top:18px;border-radius:14px;padding:14px 18px}
+.fb.ok{background:var(--ok-bg);color:var(--ok)}.fb.bad{background:var(--bad-bg);color:var(--bad)}
+.fb strong{display:block}
+.fb p{margin:.3em 0 0;color:var(--ink)}
+.result{text-align:center;padding-block:10px}
+.score{font-size:64px;font-weight:800;color:var(--pine);font-variant-numeric:tabular-nums;line-height:1}
+.cert{border:3px solid var(--pine);border-radius:20px;padding:32px;text-align:center;background:var(--lime-soft);margin-top:20px}
+.cert .big{font-size:26px;font-weight:800;margin:.3em 0}
+input[type=text]{font:inherit;padding:12px 14px;border-radius:12px;border:2px solid var(--line);background:var(--card);color:var(--ink);width:min(100%,360px)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin:18px 0}
+.tile{background:var(--bg);border-radius:14px;padding:16px}
+.tile b{display:block;font-size:24px;color:var(--pine);font-variant-numeric:tabular-nums}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand">
+      <svg width="54" height="54" viewBox="0 0 54 54" aria-hidden="true"><rect width="54" height="54" rx="14" fill="var(--pine)"/><polyline points="9,40 19,33 28,36 45,14" fill="none" stroke="var(--lime)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="45" cy="14" r="5" fill="var(--amber)"/></svg>
+      <div><small>Chancenwerk · Selbstlernkurs für Übungsleitungen</small><h1>Einführung in die CHANCENkurve</h1></div>
+    </div>
+    <div class="meter" aria-live="polite"><div class="lbl"><span>Fortschritt</span><span id="progTxt">0 von 6 Kapiteln</span></div><div class="bar"><i id="progBar"></i></div></div>
+  </div>
+</header>
+
+<div class="wrap layout">
+  <nav class="chapters" id="nav" aria-label="Kapitel"></nav>
+  <main id="main" tabindex="-1"></main>
+</div>
+
+<script>
+const PASS=4;
+const say=(t,l)=>`<div class="say"><b>${l||"So kannst du es sagen"}</b>„${t}“</div>`;
+const tbl=(h,rows)=>`<div class="tbl"><table><thead><tr>${h.map(x=>`<th>${x}</th>`).join("")}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+
+const COURSE=[
+{title:"Warum wir das machen",dur:12,
+ goals:"Du kannst erklären, was die CHANCENkurve ist, warum wir Diagnostik einsetzen und warum die Ergebnisse für Chancenwerk so wichtig sind.",
+ input:`<h3>Was ist die CHANCENkurve?</h3>
+ <p>Die CHANCENkurve ist unsere Lernverlaufsdiagnostik in Deutsch und Mathe. Sie basiert auf den Open-Science-Tests von LEVUMI, entwickelt von der TU Dortmund und der LMU München. Im Fokus stehen die Basiskompetenzen Leseverstehen und Grundrechenarten.</p>
+ <ul><li>Die Bezugsnorm ist das Kind selbst: Habe ich mich verbessert?</li><li>Es gibt keine Note und keinen Vergleich mit anderen Kindern.</li></ul>
+ <h3>Wozu eigentlich Diagnostik?</h3>
+ <p>Es geht nicht um Bewertung. Es geht darum, Lernprozesse zu verstehen und gezielt zu planen. Dafür gibt es fünf gute Gründe:</p>
+ <ol><li><b>Förderung steuern:</b> Diagnostik und Förderung bilden einen Kreislauf. Wir testen, fördern und testen wieder. So sehen wir, ob unsere Förderung wirkt, und gleichen unser Gefühl zum Lernstand mit echten Daten ab.</li>
+ <li><b>Anlass für Gespräche:</b> Die Ergebnisse geben Stoff für Gespräche im Team, mit den Kindern, mit Erziehungsberechtigten und mit Lehrkräften.</li>
+ <li><b>Screening:</b> Wir erkennen, wer überhaupt Förderung braucht, auch in höheren Jahrgängen. Dafür braucht es mindestens zwei Tests.</li>
+ <li><b>Reporting:</b> Wir machen die Leistungen der geförderten Kinder sichtbar und erfüllen die Erwartungen unserer Stiftungen.</li>
+ <li><b>Werbung:</b> Sichtbare Erfolge überzeugen. So profitieren mehr Kinder von besseren Lernförderangeboten.</li></ol>
+ <h3>Warum die Daten so wichtig sind</h3>
+ <p>Verlässliche Testergebnisse zeigen unseren Stiftungen, was wir bewirken. Das sichert die Finanzierung und damit die Lernförderung an deiner Schule. Fehlen die Ergebnisse, können Stiftungen abspringen. Darum hat die CHANCENkurve in der Lernförderzeit Priorität.</p>`,
+ quiz:[
+  {type:"single",q:"Was ist die Bezugsnorm der CHANCENkurve?",opts:["Der Durchschnitt der Klasse","Die Note im Zeugnis","Das Kind selbst und seine vorherige Leistung","Die Ergebnisse anderer Schulen"],correct:[2],fb:"Die CHANCENkurve vergleicht ein Kind nur mit sich selbst. Die Frage lautet immer: Habe ich mich verbessert?"},
+  {type:"single",q:"Welche Aussage beschreibt das Ziel unserer Diagnostik am besten?",opts:["Wir wollen die Kinder benoten.","Wir wollen Lernprozesse verstehen und die Förderung gezielt planen.","Wir wollen die Kinder einer Klasse miteinander vergleichen.","Wir wollen die Arbeit der Lehrkräfte bewerten."],correct:[1],fb:"Es geht nicht um Bewertung, sondern um Entwicklung und gute Entscheidungen für die Förderung."},
+  {type:"match",q:"Ordne die Beschreibungen den fünf Gründen zu.",pairs:[["Wir sehen, ob unsere Fördermaßnahmen wirken.","Förderung steuern"],["Wir sprechen mit Eltern über den Lernstand ihres Kindes.","Anlass für Gespräche"],["Wir erkennen, wer überhaupt Förderung braucht.","Screening"],["Wir zeigen Stiftungen, was die Kinder erreicht haben.","Reporting"],["Mehr Kinder profitieren von guten Lernförderangeboten.","Werbung"]],fb:"Die fünf Gründe zeigen, dass Diagnostik weit mehr ist als ein Test."},
+  {type:"single",q:"Was kann passieren, wenn keine verlässlichen Testergebnisse vorliegen?",opts:["Nichts, die Ergebnisse sind nur für die Statistik.","Die Kinder bekommen schlechtere Noten.","Stiftungen können abspringen, und damit fehlt das Geld für die Lernförderung.","Die Schule muss die Tests selbst bezahlen."],correct:[2],fb:"Darum hat die CHANCENkurve in der Lernförderzeit Priorität."},
+  {type:"multi",q:"Welche Kompetenzen stehen bei der CHANCENkurve im Fokus?",opts:["Leseverstehen","Rechtschreibung","Grundrechenarten","Geometrie"],correct:[0,2],fb:"Die CHANCENkurve konzentriert sich auf die Basiskompetenzen Leseverstehen und Grundrechenarten."}
+ ]},
+{title:"Wer, was, wann",dur:12,
+ goals:"Du weißt, welche Kinder getestet werden, welche Tests wir einsetzen und in welchem Rhythmus getestet wird.",
+ input:`<div class="tiles"><div class="tile">Zielgruppe<b>Klasse 3 bis 6</b></div><div class="tile">Testdauer<b>5 Minuten</b></div><div class="tile">Rhythmus<b>alle 6 bis 8 Wochen</b></div></div>
+ <h3>Wer wird getestet?</h3>
+ <p>Getestet werden Kinder der Klassen 3 bis 6 mit Förderbedarf in Deutsch oder Mathe. Vermutet ihr auch bei älteren Kindern Förderbedarf, könnt ihr sie ebenfalls testen.</p>
+ <h3>Welche Tests setzen wir ein?</h3>
+ <ul><li><b>Deutsch:</b> Leseverstehen auf Satzebene, Niveaustufe N4.</li><li><b>Mathe:</b> Subtraktion, Station 3. Das bedeutet Kopfrechnen bis 100 mit einstelligem Subtrahenden und Zehnerübergang.</li></ul>
+ <h3>Niveaustufen in Deutsch</h3>
+ ${tbl(["Niveaustufe","Passend für"],[["N2","Schuleingangsphase (Klasse 1 bis 2), sobald die Kinder lesen können"],["N4 <span class='tag'>Unser Start</span>","Klasse 3 bis 4"],["N6","Sekundarstufe I, ab Klasse 5"]])}
+ <h3>Niveaustufe N3 in Mathe</h3>
+ <p>Kopfrechnen und Platzhalteraufgaben im Zahlenraum bis 100, für Klasse 3 bis 6 und auch bei Dyskalkulie geeignet.</p>
+ ${tbl(["Rechenart","Stationen"],[["Addition","Station 1 bis 4"],["Subtraktion","Station 1 bis 4 <span class='tag'>Start: Station 3</span>"],["Multiplikation","Station 1 bis 2"],["Division","Station 1 bis 2"]])}
+ <h3>Was passiert nach dem Test?</h3>
+ <ol><li>Das Kind macht den Test auf der Startstufe.</li><li>Ist die Stufe zu leicht oder zu schwer, wird automatisch hoch oder runter gestuft. Im letzten Jahr hätte das etwa 30 bis 40 Prozent der Kinder betroffen.</li><li>Wir schauen uns das Ergebnis an und leiten passende Förderung ein.</li><li>Wir testen erneut und passen die Förderung bei Bedarf an.</li></ol>
+ <h3>Wann wird getestet?</h3>
+ <p>In diesem Schuljahr testen wir alle 6 bis 8 Wochen. Den Start legt ihr gemeinsam mit eurer Schulteambegleitung (STB) fest. Je öfter die Kinder testen, desto vertrauter werden Format und Ergebnisse. Wer fehlt, holt den Test verlässlich nach, zum Beispiel beim nächsten Termin in einem anderen Raum.</p>`,
+ quiz:[
+  {type:"single",q:"Welche Kinder werden standardmäßig mit der CHANCENkurve getestet?",opts:["Alle Kinder der Schule","Kinder der Klassen 3 bis 6 mit Förderbedarf in Deutsch oder Mathe","Nur Kinder der Klasse 5","Nur Kinder mit sehr guten Noten"],correct:[1],fb:"Und wenn ihr bei älteren Kindern Förderbedarf vermutet, dürft ihr sie gern ebenfalls testen."},
+  {type:"match",q:"Ordne die Tests dem passenden Inhalt zu.",pairs:[["Deutsch, N4","Leseverstehen auf Satzebene, Klasse 3 bis 4"],["Mathe, Subtraktion Station 3","Kopfrechnen bis 100, Subtrahend einstellig, mit Zehnerübergang"],["Deutsch, N6","Leseverstehen ab Klasse 5"],["Deutsch, N2","Leseverstehen in der Schuleingangsphase"]],fb:"Unsere Startstufen sind Deutsch N4 und Mathe Subtraktion Station 3."},
+  {type:"single",q:"Wie lange dauert ein CHANCENkurve-Test pro Kind?",opts:["2 Minuten","5 Minuten","15 Minuten","Eine Schulstunde"],correct:[1],fb:"Der Test ist kurz, darum kommt es auf volle Konzentration an."},
+  {type:"single",q:"Was passiert, wenn die Niveaustufe für ein Kind zu leicht oder zu schwer ist?",opts:["Das Kind wird aus der CHANCENkurve genommen.","Die Schulkoordination stuft das Kind per Hand um.","Das Kind wird nach der Testung automatisch hoch oder runter gestuft.","Das Kind bleibt immer auf der Startstufe."],correct:[2],fb:"Die Umstufung läuft automatisch. Für jede Niveaustufe gibt es passendes Fördermaterial."},
+  {type:"multi",q:"Welche Aussagen zum Testrhythmus stimmen?",opts:["Wir testen in diesem Schuljahr alle 6 bis 8 Wochen.","Wer an einem Testtermin fehlt, lässt den Test einfach aus.","Den Start legt ihr gemeinsam mit eurer STB fest.","Getestet wird nur einmal pro Schuljahr."],correct:[0,2],fb:"Wer fehlt, holt den Test verlässlich nach, damit die Kurve aussagekräftig bleibt."}
+ ]},
+{title:"Vorbereitung vor Ort",dur:15,
+ goals:"Du kennst die Rollen im Schulteam, weißt, was vor der ersten Testung vorbereitet sein muss, und kennst den Ablauf auf dem CHANCENcampus.",
+ input:`<h3>Wer macht was?</h3>
+ ${tbl(["Rolle","Aufgabe bei der CHANCENkurve"],[["Schulkoordination","Der organisatorische Motor: plant Termine, organisiert Räume und Aufsicht und behält die Daten im Blick"],["Lernkoordination","Begleitet die Kinder während der Testung eng und unterstützt bei der Aufsicht"],["Jugendliche","Begleiten jeweils ein Kind, ermutigen und achten auf Konzentration"],["Schulteambegleitung","Startet die CHANCENkurve mit euch und ist bei den ersten Testungen dabei"]])}
+ <p>Klärt die Aufgabenteilung vor Ort, bevor die erste Testung startet.</p>
+ <h3>Gut vorbereitet in die Testung</h3>
+ <ul><li><b>Checklisten:</b> Geht die Checklisten aus dem Handout vor dem Start gemeinsam im Team durch. Sie decken Technik, Zeit, Auswahl der Kinder und Förderung ab.</li>
+ <li><b>Liste in der geteilten Ablage:</b> alle Kinder mit Jahrgang, Zugangsdaten, Test und Niveau, Terminen und Status. Diese Daten sind vertraulich.</li>
+ <li><b>Zugänge:</b> Alle Kinder und das ganze Team haben Zugang zum CHANCENcampus. Passwörter vergebt ihr über den CHANCENraum neu.</li>
+ <li><b>Technik mit Plan B:</b> Verlasst euch nicht auf Computerraum oder Schulgeräte. Eigene Geräte und ein Hotspot sichern den Ablauf.</li></ul>
+ <h3>Die CHANCENkurve auf dem CHANCENcampus</h3>
+ <div class="placeholder"><b>Platzhalter: Screencast, ca. 5 Minuten</b><br>Anmeldung, Test finden, Ablauf mit Malu und Bente („Los geht’s“, „Jetzt starten“), Auswertung im Teacher Dashboard und automatische Umstufung</div>`,
+ quiz:[
+  {type:"match",q:"Ordne die Aufgaben der richtigen Rolle zu.",pairs:[["Plant Termine und organisiert Räume und Aufsicht","Schulkoordination"],["Begleitet die Kinder während der Testung eng","Lernkoordination"],["Begleitet genau ein Kind und ermutigt es","Jugendliche"],["Startet die CHANCENkurve mit dem Team","Schulteambegleitung"]],fb:"Eine klare Aufgabenteilung sorgt für einen ruhigen Ablauf."},
+  {type:"single",q:"Wann solltet ihr die Checklisten aus dem Handout durchgehen?",opts:["Nach der ersten Testung","Gemeinsam im Team, bevor ihr mit der CHANCENkurve startet","Nur wenn technische Probleme auftreten","Am Ende des Schuljahres"],correct:[1],fb:"So fällt frühzeitig auf, was noch fehlt."},
+  {type:"multi",q:"Was stimmt zur Liste in der geteilten Ablage?",opts:["Sie enthält Zugangsdaten, Tests, Termine und den Status der Kinder.","Sie darf öffentlich im Klassenraum aushängen.","Die Daten darin sind vertraulich.","Sie wird nur einmal im Jahr aktualisiert."],correct:[0,2],fb:"Behandelt die Liste sorgfältig, sie enthält persönliche Daten der Kinder."},
+  {type:"single",q:"Wie geht ihr bei der Technik am besten vor?",opts:["Ihr verlasst euch auf den zugesagten Computerraum.","Ihr testet nur, wenn das Schul-WLAN funktioniert.","Ihr habt einen Plan B mit eigenen Geräten und einem Hotspot.","Ihr verschiebt die Testung bei Problemen auf das nächste Schuljahr."],correct:[2],fb:"Ein Plan B sichert den Ablauf, auch wenn die Schul-IT einmal streikt."},
+  {type:"single",q:"Wo werden Passwörter für den CHANCENcampus neu vergeben?",opts:["Im Teacher Dashboard","Im CHANCENraum","Bei der Schulleitung","Im Handout"],correct:[1],fb:"Über den CHANCENraum lassen sich Passwörter generieren und neu vergeben."}
+ ]},
+{title:"Die Testsituation gestalten",dur:15,
+ goals:"Du weißt, warum die Kinder eng begleitet werden, wie du die Testung startest und begleitest und was bei einem unbrauchbaren Test passiert.",
+ input:`<h3>Warum enge Begleitung?</h3>
+ <p>Ein Test hat etwas Persönliches, und Kinder reagieren sehr unterschiedlich darauf:</p>
+ <ul><li><b>Das Kind traut sich nicht:</b> Es arbeitet zögerlich und zeigt weniger, als es eigentlich kann.</li><li><b>Das Kind klickt sich durch:</b> Es klickt ständig auf „Weiter“, ohne zu lesen. Der Test ist damit unbrauchbar.</li></ul>
+ <p>Nur mit enger Begleitung bekommen wir Ergebnisse, die zeigen, was ein Kind wirklich kann.</p>
+ <h3>Der Rahmen</h3>
+ <ul><li><b>Kleine Gruppen,</b> gern im Rotationssystem. Große Gruppen bringen Unruhe.</li><li><b>Ein ruhiger Raum</b> mit fester Aufsicht.</li><li><b>Die Förderung läuft weiter:</b> Die übrigen Kinder arbeiten normal mit ihren CHANCENheften.</li></ul>
+ <div class="tiles"><div class="tile">Übungsleitung, höchstens<b>1 : 3</b></div><div class="tile">Jugendliche, idealerweise<b>1 : 1</b></div></div>
+ <p>Wir geben keine Antworten vor. Wir ermutigen, erklären den Ablauf und achten auf Konzentration.</p>
+ <h3>So startest du die Testung</h3>
+ <ol><li><b>Sinn erklären:</b> Kinder testen verlässlicher, wenn sie verstehen, worum es geht.</li><li><b>Erwartungen klären:</b> Keine Note, kein Wettbewerb. In Ruhe lesen und das Beste geben.</li><li><b>Ablauf zeigen:</b> Test öffnen, Beispiel ansehen, starten.</li></ol>
+ ${say("Heute machen wir die CHANCENkurve. Damit sehen wir, was du schon gut kannst und wobei wir dir noch helfen können. Es gibt keine Note. Wichtig ist nur, dass du in Ruhe liest und dein Bestes gibst. Du hast 5 Minuten Zeit.")}
+ <h3>Während des Tests</h3>
+ <ul><li><b>Nah dran sein:</b> Sitz bei den Kindern, nicht am Pult.</li><li><b>Ermutigen, nicht vorsagen.</b></li><li><b>Durchklicken stoppen:</b> Sprich das Kind direkt an.</li><li><b>Nach dem Test:</b> ein kurzes, positives Wort, dann den Status in der Liste eintragen.</li></ul>
+ <h3>Wenn ein Test unbrauchbar ist</h3>
+ <p>Du hast beobachtet, dass das Kind ohne zu lesen weiterklickt, oder die Detailansicht zeigt ungewöhnlich viele Fehler. Dann wird der Test gelöscht und mit klarer Erwartung wiederholt. Sprich vorher kurz mit dem Kind, am besten unter vier Augen.</p>
+ ${say("Mir ist aufgefallen, dass du ziemlich schnell durchgeklickt hast. Das sehen wir in der Auswertung. Uns geht es nicht um eine Note. Wir wollen dich richtig gut unterstützen, und dafür müssen wir wissen, was du wirklich kannst. Lass uns den Test nochmal machen, ich bleibe bei dir.")}`,
+ quiz:[
+  {type:"multi",q:"Warum begleiten wir die Kinder während der Testung eng?",opts:["Manche Kinder trauen sich nicht und zeigen weniger, als sie können.","Damit wir bei schwierigen Aufgaben die Lösung sagen können.","Manche Kinder klicken sich durch, und der Test wird unbrauchbar.","Weil die Tests sonst länger als 5 Minuten dauern."],correct:[0,2],fb:"Enge Begleitung heißt da sein, ermutigen und auf Konzentration achten, aber niemals vorsagen."},
+  {type:"single",q:"Wie viele Kinder begleitet eine Übungsleitung während der Testung höchstens gleichzeitig?",opts:["Eins","Drei","Sechs","Die ganze Gruppe"],correct:[1],fb:"Höchstens drei. Jugendliche begleiten idealerweise genau ein Kind."},
+  {type:"order",q:"Bringe den Ablauf der Testung in die richtige Reihenfolge.",items:["Sinn erklären: Warum machen wir die CHANCENkurve?","Erwartungen klären: keine Note, in Ruhe lesen, das Beste geben","Ablauf zeigen: Test öffnen und Beispiel ansehen","Mit „Jetzt starten“ beginnen die 5 Minuten","Nach dem Test ein kurzes, positives Wort"],fb:"Wenn die Kinder wissen, worum es geht, testen sie deutlich verlässlicher."},
+  {type:"single",q:"Ein Kind hängt bei einer Aufgabe fest und fragt dich nach der Lösung. Was tust du?",opts:["Du sagst ihm die Lösung, damit es weitermachen kann.","Du überspringst die Aufgabe für das Kind.","Du ermutigst es, in Ruhe zu lesen und weiterzumachen, gibst aber keine Antwort vor.","Du brichst den Test ab."],correct:[2],fb:"Ermutigen ja, vorsagen nein. Sonst zeigt der Test nicht, was das Kind wirklich kann."},
+  {type:"single",q:"Du bemerkst, dass ein Kind ohne zu lesen durchgeklickt hat. Was passiert?",opts:["Das Ergebnis wird trotzdem gewertet.","Du ermahnst das Kind vor der ganzen Gruppe.","Der Test wird gelöscht und nach einem kurzen Gespräch unter vier Augen wiederholt.","Das Kind nimmt nicht mehr an der CHANCENkurve teil."],correct:[2],fb:"Das Kind soll merken, dass wir es sehen, aber nicht bestrafen wollen."}
+ ]},
+{title:"Feedback und Ergebnisse",dur:12,
+ goals:"Du weißt, wann die Kinder Feedback bekommen, kannst eine CHANCENkurve lesen und motivierend, ehrlich und konstruktiv zurückmelden.",
+ input:`<h3>Wann gibt es Feedback?</h3>
+ ${tbl(["Zeitpunkt","Art","Worum es geht"],[["Nach dem 1. Test","Mini-Feedback","Kurz, individuell und motivierend. Einsatz würdigen und mögliches Weiterklicken direkt ansprechen."],["Ab dem 2. Test","Reguläres Feedback","Geplantes Gespräch mit Blick auf die Kurve: Wie hat sich das Kind seit dem letzten Test entwickelt?"]])}
+ ${say("Super, dass du so konzentriert dabei warst! Heute war dein erster Test, beim nächsten Mal sehen wir schon deine erste Kurve. Wichtig ist, dass du jede Aufgabe in Ruhe liest und nicht einfach weiterklickst. Das sehen wir nämlich in der Auswertung.","Mini-Feedback, so kannst du es sagen")}
+ <h3>Die Kurve lesen</h3>
+ <p>Im Teacher Dashboard siehst du die letzten fünf Tests eines Kindes. Die Detailansicht zeigt die Antworten insgesamt, die richtigen und die falschen Antworten. Entscheidend ist der Trend, nicht der einzelne Test.</p>
+ <svg viewBox="0 0 520 210" width="100%" style="max-width:560px" role="img" aria-label="Beispielkurve: Die richtigen Antworten steigen über vier Tests von 36 auf 49">
+  <g stroke="var(--line)"><line x1="40" y1="20" x2="510" y2="20"/><line x1="40" y1="90" x2="510" y2="90"/><line x1="40" y1="160" x2="510" y2="160"/></g>
+  <g fill="var(--muted)" font-size="12" font-family="Montserrat,sans-serif"><text x="30" y="24" text-anchor="end">60</text><text x="30" y="94" text-anchor="end">40</text><text x="30" y="164" text-anchor="end">20</text>
+  <text x="90" y="200" text-anchor="middle">1. Test</text><text x="220" y="200" text-anchor="middle">2. Test</text><text x="350" y="200" text-anchor="middle">3. Test</text><text x="480" y="200" text-anchor="middle">4. Test</text></g>
+  <line x1="60" y1="125" x2="500" y2="66" stroke="var(--muted)" stroke-width="2" stroke-dasharray="7 6"/>
+  <polyline points="90,104 220,111 350,90 480,48" fill="none" stroke="var(--pine)" stroke-width="4"/>
+  <g fill="var(--pine)"><circle cx="90" cy="104" r="6"/><circle cx="220" cy="111" r="6"/><circle cx="350" cy="90" r="6"/><circle cx="480" cy="48" r="7"/></g>
+  <g fill="var(--pine-ink)" font-size="13" font-weight="700" font-family="Montserrat,sans-serif"><text x="90" y="92" text-anchor="middle">36</text><text x="220" y="132" text-anchor="middle">35</text><text x="350" y="78" text-anchor="middle">40</text><text x="480" y="36" text-anchor="middle">49</text></g>
+ </svg>
+ <p style="font-size:13px;color:var(--muted)">Richtige Antworten (grün) und Trendlinie (gestrichelt)</p>
+ <h3>Rückmeldung an das Kind</h3>
+ <p>Deine Rückmeldung ist motivierend, ehrlich und konstruktiv.</p>
+ ${tbl(["Wenn die Kurve …","So kannst du es sagen"],[["steigt","„Du schaffst es, von Mal zu Mal mehr Aufgaben richtig zu lösen. Du verbesserst dich richtig gut!“"],["schwankt","„Mal klappt es besser, mal weniger, aber insgesamt geht es nach oben. Lass dich von einem schlechten Tag nicht entmutigen!“"],["fällt","„Deine Kurve ist zuletzt gefallen. Lass uns überlegen, woran das liegt. Brauchst du mehr Hilfe, oder warst du heute unkonzentriert?“"]])}`,
+ quiz:[
+  {type:"match",q:"Ordne die Merkmale dem richtigen Feedback zu.",pairs:[["Direkt nach dem ersten Test","Mini-Feedback"],["Mögliches Weiterklicken früh ansprechen","Mini-Feedback"],["Ab dem zweiten Test","Reguläres Feedback"],["Geplanter Vergleich mit dem letzten Test","Reguläres Feedback"]],fb:"Das Mini-Feedback legt den Grundstein, das reguläre Feedback zeigt die Entwicklung."},
+  {type:"single",q:"Was ist beim Lesen einer CHANCENkurve am wichtigsten?",opts:["Das Ergebnis des letzten Tests","Die Anzahl der Fehler im ersten Test","Der Trend über mehrere Tests","Der Vergleich mit anderen Kindern"],correct:[2],fb:"Ein einzelner schlechter Tag sagt wenig. Der Trend zeigt die Entwicklung."},
+  {type:"single",q:"Wo siehst du die Anzahl der richtigen und falschen Antworten eines Tests?",opts:["In der Liste in der geteilten Ablage","In der Detailansicht im Teacher Dashboard","Im Handout","Im CHANCENraum"],correct:[1],fb:"Das Teacher Dashboard zeigt die letzten fünf Tests, die Detailansicht die genauen Zahlen."},
+  {type:"match",q:"Ordne die Rückmeldungen dem passenden Kurvenverlauf zu.",pairs:[["„Du verbesserst dich von Mal zu Mal richtig gut!“","Kurve steigt"],["„Lass dich von einem schlechten Tag nicht entmutigen!“","Kurve schwankt, insgesamt nach oben"],["„Lass uns überlegen, woran das liegt. Brauchst du mehr Hilfe?“","Kurve fällt"]],fb:"Jede Kurve verdient eine passende, ehrliche Rückmeldung."},
+  {type:"multi",q:"Wie sollte deine Rückmeldung an das Kind sein?",opts:["Motivierend","Ehrlich","Streng","Konstruktiv"],correct:[0,1,3],fb:"So bleibt das Kind motiviert und weiß trotzdem, woran es arbeiten kann."}
+ ]},
+{title:"Vom Ergebnis zur Förderung",dur:9,
+ goals:"Du weißt, mit welchem Material gefördert wird, wie die Hefte bestellt werden und an wen du dich bei Fragen wendest.",
+ input:`<h3>Passendes Fördermaterial</h3>
+ ${tbl(["Test","CHANCENhefte","CHANCENcampus-Einheiten"],[["Deutsch, Leseverstehen N4","Abenteuer im Chancenwald, Teil 1 bis 3 (Geschichten für Lesetandems)","Lesen I und Lesen II"],["Mathe, Subtraktion Station 3","Sport und Spaß im Chancenpark; Der Wettbewerb im Chancenpark; Trainingsheft Subtraktion","Subtraktion: Platzhalteraufgaben und Kopfrechnen mit Zehnerübergang"]])}
+ <p>Für die anderen Niveaustufen gibt es ebenfalls passendes Material.</p>
+ <h3>So läuft die Förderung</h3>
+ <ul><li>Hefte und Campus-Einheiten sind den Kindern bereits zugewiesen. Prüfe im Teacher Dashboard, ob du sie siehst und die Kinder sie finden.</li><li>Die Kinder arbeiten wöchentlich etwa 20 Minuten mit dem Material.</li><li>Bestellt die Hefte auf Vorrat über die CHANCENlogistik, gemeinsam mit Schulkoordination oder Teamleitung.</li><li>Lösungen und Handreichungen findest du auf dem CHANCENcampus.</li></ul>
+ <h3>Wer hilft dir weiter?</h3>
+ ${tbl(["Ansprechperson","Wofür"],[["STB und Schulkoordination","Erste Anlaufstelle für Organisation und Durchführung"],["Redaktion<br>redaktion@chancenwerk.org","Fragen zu Tests und Fördermaterial"],["CHANCENcampus-Support<br>chancencampus-support@chancenwerk.org","Technik und Zugänge"]])}`,
+ quiz:[
+  {type:"match",q:"Ordne das Fördermaterial dem passenden Test zu.",pairs:[["Abenteuer im Chancenwald, Teil 1 bis 3","Deutsch, Leseverstehen N4"],["Campus-Einheiten Lesen I und Lesen II","Deutsch, Leseverstehen N4"],["Sport und Spaß im Chancenpark","Mathe, Subtraktion Station 3"],["Trainingsheft Subtraktion","Mathe, Subtraktion Station 3"]],fb:"So findest du schnell das passende Material für jedes Kind."},
+  {type:"single",q:"Wie lange sollten die Kinder pro Woche mit dem Fördermaterial arbeiten?",opts:["5 Minuten","Etwa 20 Minuten","Zwei Stunden","Nur vor dem nächsten Test"],correct:[1],fb:"Regelmäßig etwa 20 Minuten pro Woche während der Lernförderung."},
+  {type:"single",q:"Wie bestellt ihr die CHANCENhefte am besten?",opts:["Erst wenn ein Kind sie braucht, im Buchhandel","Auf Vorrat über die CHANCENlogistik, mit Schulkoordination oder Teamleitung","Die Kinder kaufen sie selbst.","Ihr druckt sie aus dem Handout aus."],correct:[1],fb:"So liegt das Material bereit, sobald die Ergebnisse da sind."},
+  {type:"match",q:"An wen wendest du dich bei welcher Frage?",pairs:[["Ein Kind kann sich nicht auf dem CHANCENcampus anmelden.","CHANCENcampus-Support"],["Du hast eine inhaltliche Frage zu einem Heft.","Redaktion"],["Ihr braucht einen neuen Raum für die Testung.","STB und Schulkoordination"]],fb:"Bei Unsicherheit sind STB und Schulkoordination immer die erste Anlaufstelle."},
+  {type:"single",q:"Wo findest du Lösungen und Handreichungen zu den CHANCENheften?",opts:["In der Liste in der geteilten Ablage","Auf der Rückseite jedes Heftes","Auf dem CHANCENcampus","Bei den Lehrkräften der Schule"],correct:[2],fb:"Damit bist du bestens für die Förderung vorbereitet."}
+ ]}
+];
+
+// ---------- Zustand ----------
+const KEY="ck-kurs-v1";
+let S={passed:{},name:""};
+try{const raw=localStorage.getItem(KEY);if(raw)S=Object.assign(S,JSON.parse(raw));}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}};
+const unlocked=i=>i===0||S.passed[i-1]!=null;
+const doneCount=()=>Object.keys(S.passed).length;
+let view={ch:0,mode:"start",qi:0,answers:[],checked:false};
+
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+
+function renderNav(){
+  $("#nav").innerHTML=COURSE.map((c,i)=>{
+    const d=S.passed[i]!=null,u=unlocked(i);
+    return `<button class="ch ${d?"done":""}" data-ch="${i}" ${u?"":"disabled"} aria-current="${view.mode!=="start"&&view.mode!=="end"&&view.ch===i}">
+      <span class="n">${d?"✓":i+1}</span><span><span class="t">${esc(c.title)}</span><br><span class="s">${d?`Bestanden, ${S.passed[i]} von 5`:u?`${c.dur} Minuten`:"Noch gesperrt"}</span></span></button>`;
+  }).join("");
+  $("#nav").querySelectorAll("[data-ch]").forEach(b=>b.onclick=()=>openChapter(+b.dataset.ch));
+  const n=doneCount();
+  $("#progTxt").textContent=`${n} von ${COURSE.length} Kapiteln`;
+  $("#progBar").style.width=(n/COURSE.length*100)+"%";
+}
+function go(){renderNav();window.scrollTo({top:0});$("#main").focus({preventScroll:true});}
+
+function renderStart(){
+  view.mode="start";
+  const next=COURSE.findIndex((c,i)=>S.passed[i]==null);
+  $("#main").innerHTML=`<section class="panel">
+   <div class="eyebrow">Willkommen</div>
+   <h2>Fit für die CHANCENkurve in sechs Kapiteln</h2>
+   <div class="prose"><p>In diesem Kurs lernst du alles, was du für die Durchführung der CHANCENkurve an deiner Schule brauchst. Jedes Kapitel besteht aus einem kurzen Input und einem Quiz mit fünf Fragen.</p>
+   <ul><li>Mit mindestens <b>${PASS} von 5</b> richtigen Antworten schaltest du das nächste Kapitel frei.</li><li>Du kannst jedes Quiz so oft wiederholen, wie du möchtest.</li><li>Dein Fortschritt wird in diesem Browser gespeichert.</li></ul></div>
+   <div class="tiles"><div class="tile">Kapitel<b>6</b></div><div class="tile">Fragen<b>30</b></div><div class="tile">Dauer<b>ca. 75 Min.</b></div></div>
+   <div class="actions">${next<0?`<button class="btn" id="toEnd">Zur Teilnahmebestätigung</button>`:`<button class="btn" id="go">${doneCount()?"Weiter mit Kapitel "+(next+1):"Kurs starten"}</button>`}
+   ${doneCount()?`<button class="btn ghost" id="reset">Fortschritt zurücksetzen</button>`:""}</div></section>`;
+  const g=$("#go");if(g)g.onclick=()=>openChapter(next);
+  const e=$("#toEnd");if(e)e.onclick=renderEnd;
+  const r=$("#reset");if(r)r.onclick=()=>{r.textContent="Wirklich zurücksetzen?";r.onclick=()=>{S={passed:{},name:""};save();renderStart();};};
+  go();
+}
+
+function openChapter(i){
+  if(!unlocked(i))return;
+  view={ch:i,mode:"input",qi:0,answers:[],checked:false};
+  const c=COURSE[i];
+  $("#main").innerHTML=`<section class="panel">
+   <div class="eyebrow">Kapitel ${i+1} von ${COURSE.length} · ca. ${c.dur} Minuten</div>
+   <h2>${esc(c.title)}</h2>
+   <p class="goals"><b>Lernziele:</b> ${esc(c.goals)}</p>
+   <div class="prose">${c.input}</div>
+   <div class="actions"><button class="btn" id="toQuiz">Zum Quiz: 5 Fragen</button></div></section>`;
+  $("#toQuiz").onclick=startQuiz;
+  go();
+}
+
+function startQuiz(){
+  const c=COURSE[view.ch];
+  view.mode="quiz";view.qi=0;view.results=[];
+  view.prep=c.quiz.map(q=>{
+    if(q.type==="single"||q.type==="multi"){const idx=shuffle(q.opts.map((_,k)=>k));return{order:idx,sel:[]};}
+    if(q.type==="match"){return{items:shuffle(q.pairs.map((p,k)=>k)),targets:[...new Set(q.pairs.map(p=>p[1]))],place:{},picked:null};}
+    if(q.type==="order"){let o=shuffle(q.items.map((_,k)=>k));if(o.every((v,k)=>v===k))o=o.reverse();return{order:o};}
+  });
+  renderQ();
+}
+
+const TYPE={single:"Multiple Choice · eine richtige Antwort",multi:"Multiple Choice · mehrere richtige Antworten",match:"Zuordnung · Drag and Drop",order:"Reihenfolge · Drag and Drop"};
+function renderQ(){
+  const c=COURSE[view.ch],q=c.quiz[view.qi],p=view.prep[view.qi];
+  view.checked=false;
+  let body="";
+  if(q.type==="single"||q.type==="multi"){
+    body=`${q.type==="multi"?`<p class="hint">Wähle ${q.correct.length} Antworten.</p>`:""}<div class="opts">${p.order.map(k=>`<button class="opt ${q.type}" data-k="${k}" aria-pressed="${p.sel.includes(k)}"><span class="box"></span><span>${esc(q.opts[k])}</span></button>`).join("")}</div>`;
+  }else if(q.type==="match"){
+    body=`<p class="hint">Ziehe jede Karte in das passende Feld. Alternativ: Karte antippen, dann Feld antippen.</p>
+     <div class="pool" data-bucket="pool" aria-label="Noch nicht zugeordnet">${p.items.filter(k=>p.place[k]==null).map(k=>chip(q,p,k)).join("")||`<span class="hint" style="margin:0">Alle Karten sind zugeordnet.</span>`}</div>
+     <div class="buckets">${p.targets.map((t,ti)=>`<div class="bucket" data-bucket="${ti}" tabindex="0" role="button" aria-label="Feld ${esc(t)}"><h4>${esc(t)}</h4>${p.items.filter(k=>p.place[k]===ti).map(k=>chip(q,p,k)).join("")}</div>`).join("")}</div>`;
+  }else{
+    body=`<p class="hint">Ziehe die Schritte in die richtige Reihenfolge oder nutze die Pfeile.</p><ol class="orderlist">${p.order.map((k,pos)=>`<li draggable="true" data-pos="${pos}"><span class="pos">${pos+1}</span><span class="txt">${esc(q.items[k])}</span><button class="mini" data-up="${pos}" aria-label="Nach oben" ${pos===0?"disabled":""}>↑</button><button class="mini" data-down="${pos}" aria-label="Nach unten" ${pos===p.order.length-1?"disabled":""}>↓</button></li>`).join("")}</ol>`;
+  }
+  $("#main").innerHTML=`<section class="panel">
+   <div class="qhead"><div class="eyebrow">Quiz Kapitel ${view.ch+1} · Frage ${view.qi+1} von 5</div>
+   <div class="dots" aria-hidden="true">${c.quiz.map((_,k)=>`<i class="${k===view.qi?"cur":view.results[k]===true?"r":view.results[k]===false?"w":""}"></i>`).join("")}</div></div>
+   <div class="qtype">${TYPE[q.type]}</div>
+   <div class="qtext">${esc(q.q)}</div>
+   ${body}
+   <div id="fb" aria-live="polite"></div>
+   <div class="actions"><button class="btn" id="check" ${ready()?"":"disabled"}>Antwort prüfen</button><button class="btn ghost" id="back">Zurück zum Input</button></div></section>`;
+  $("#check").onclick=check;
+  $("#back").onclick=()=>openChapter(view.ch);
+  wire();
+}
+const chip=(q,p,k)=>`<button class="chip" draggable="true" data-item="${k}" aria-pressed="${p.picked===k}">${esc(q.pairs[k][0])}</button>`;
+function ready(){
+  const q=COURSE[view.ch].quiz[view.qi],p=view.prep[view.qi];
+  if(q.type==="single")return p.sel.length===1;
+  if(q.type==="multi")return p.sel.length>0;
+  if(q.type==="match")return p.items.every(k=>p.place[k]!=null);
+  return true;
+}
+function wire(){
+  const q=COURSE[view.ch].quiz[view.qi],p=view.prep[view.qi];
+  if(q.type==="single"||q.type==="multi"){
+    document.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
+      if(view.checked)return;const k=+b.dataset.k;
+      if(q.type==="single")p.sel=[k];else p.sel=p.sel.includes(k)?p.sel.filter(x=>x!==k):[...p.sel,k];
+      document.querySelectorAll(".opt").forEach(o=>o.setAttribute("aria-pressed",p.sel.includes(+o.dataset.k)));
+      $("#check").disabled=!ready();
+    });
+  }else if(q.type==="match"){
+    const place=(k,b)=>{if(view.checked)return;if(b==="pool")delete p.place[k];else p.place[k]=+b;p.picked=null;renderQ();};
+    document.querySelectorAll(".chip").forEach(ch=>{
+      ch.ondragstart=e=>{e.dataTransfer.setData("text/plain",ch.dataset.item);e.dataTransfer.effectAllowed="move";};
+      ch.onclick=e=>{e.stopPropagation();if(view.checked)return;const k=+ch.dataset.item;p.picked=p.picked===k?null:k;document.querySelectorAll(".chip").forEach(x=>x.setAttribute("aria-pressed",+x.dataset.item===p.picked));};
+    });
+    document.querySelectorAll("[data-bucket]").forEach(b=>{
+      b.ondragover=e=>{e.preventDefault();b.classList.add("over");};
+      b.ondragleave=()=>b.classList.remove("over");
+      b.ondrop=e=>{e.preventDefault();const k=e.dataTransfer.getData("text/plain");if(k!=="")place(+k,b.dataset.bucket);};
+      const act=()=>{if(p.picked!=null)place(p.picked,b.dataset.bucket);};
+      b.onclick=act;b.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();act();}};
+    });
+  }else{
+    const mv=(a,b)=>{if(view.checked||b<0||b>=p.order.length)return;const o=p.order;[o[a],o[b]]=[o[b],o[a]];renderQ();};
+    const moveTo=(a,b)=>{if(view.checked||a===b)return;const o=p.order;const [x]=o.splice(a,1);o.splice(b,0,x);renderQ();};
+    document.querySelectorAll("[data-up]").forEach(b=>b.onclick=()=>mv(+b.dataset.up,+b.dataset.up-1));
+    document.querySelectorAll("[data-down]").forEach(b=>b.onclick=()=>mv(+b.dataset.down,+b.dataset.down+1));
+    document.querySelectorAll(".orderlist li").forEach(li=>{
+      li.ondragstart=e=>e.dataTransfer.setData("text/plain",li.dataset.pos);
+      li.ondragover=e=>e.preventDefault();
+      li.ondrop=e=>{e.preventDefault();moveTo(+e.dataTransfer.getData("text/plain"),+li.dataset.pos);};
+    });
+  }
+}
+function check(){
+  const q=COURSE[view.ch].quiz[view.qi],p=view.prep[view.qi];
+  let ok;
+  if(q.type==="single"||q.type==="multi"){
+    ok=p.sel.length===q.correct.length&&p.sel.every(k=>q.correct.includes(k));
+    document.querySelectorAll(".opt").forEach(o=>{const k=+o.dataset.k;if(q.correct.includes(k))o.classList.add("ok");else if(p.sel.includes(k))o.classList.add("bad");});
+  }else if(q.type==="match"){
+    ok=true;
+    document.querySelectorAll(".chip").forEach(ch=>{const k=+ch.dataset.item;const good=p.targets[p.place[k]]===q.pairs[k][1];ch.classList.add(good?"ok":"bad");if(!good)ok=false;});
+  }else{
+    ok=p.order.every((k,pos)=>k===pos);
+    document.querySelectorAll(".orderlist li").forEach((li,pos)=>li.classList.add(p.order[pos]===pos?"ok":"bad"));
+  }
+  view.checked=true;view.results[view.qi]=ok;
+  let sol="";
+  if(!ok){
+    if(q.type==="match")sol="<p>Richtig wäre: "+q.pairs.map(x=>`${esc(x[0])} → ${esc(x[1])}`).join("; ")+"</p>";
+    if(q.type==="order")sol="<p>Richtige Reihenfolge: "+q.items.map((x,k)=>`${k+1}. ${esc(x)}`).join(" ")+"</p>";
+  }
+  $("#fb").innerHTML=`<div class="fb ${ok?"ok":"bad"}"><strong>${ok?"Richtig!":"Nicht ganz."}</strong><p>${esc(q.fb)}</p>${sol}</div>`;
+  const last=view.qi===4;
+  const btn=$("#check");btn.disabled=false;btn.textContent=last?"Ergebnis anzeigen":"Nächste Frage";
+  btn.onclick=()=>{if(last)renderResult();else{view.qi++;renderQ();}};
+  document.querySelectorAll(".mini,.chip").forEach(b=>b.setAttribute("tabindex","-1"));
+  btn.focus();
+}
+function renderResult(){
+  const i=view.ch,score=view.results.filter(Boolean).length,pass=score>=PASS;
+  if(pass){S.passed[i]=Math.max(score,S.passed[i]||0);save();}
+  const last=i===COURSE.length-1;
+  $("#main").innerHTML=`<section class="panel result">
+   <div class="eyebrow">Ergebnis Kapitel ${i+1}</div>
+   <div class="score">${score}<span style="font-size:28px;color:var(--muted)"> / 5</span></div>
+   <h2>${pass?(score===5?"Perfekt, alles richtig!":"Bestanden, gut gemacht!"):"Fast geschafft"}</h2>
+   <p class="prose" style="margin-inline:auto">${pass?(last?"Du hast alle Kapitel abgeschlossen.":`Kapitel ${i+2} ist jetzt freigeschaltet.`):`Für das nächste Kapitel brauchst du mindestens ${PASS} richtige Antworten. Schau dir den Input noch einmal an und versuch es erneut.`}</p>
+   <div class="actions" style="justify-content:center">
+   ${pass?(last?`<button class="btn" id="a">Zur Teilnahmebestätigung</button>`:`<button class="btn" id="a">Weiter zu Kapitel ${i+2}</button>`):`<button class="btn" id="a">Quiz wiederholen</button><button class="btn ghost" id="b">Input ansehen</button>`}</div></section>`;
+  $("#a").onclick=pass?(last?renderEnd:()=>openChapter(i+1)):startQuiz;
+  const b=$("#b");if(b)b.onclick=()=>openChapter(i);
+  go();
+}
+function renderEnd(){
+  view.mode="end";
+  if(doneCount()<COURSE.length){renderStart();return;}
+  const total=Object.values(S.passed).reduce((a,b)=>a+b,0);
+  const date=new Date().toLocaleDateString("de-DE",{day:"2-digit",month:"long",year:"numeric"});
+  $("#main").innerHTML=`<section class="panel">
+   <div class="eyebrow">Geschafft</div><h2>Du bist fit für die CHANCENkurve!</h2>
+   <label for="nm" style="font-weight:600;display:block;margin-bottom:6px">Dein Name für die Teilnahmebestätigung</label>
+   <input type="text" id="nm" value="${esc(S.name)}" placeholder="Vor- und Nachname">
+   <div class="cert"><div class="eyebrow">Teilnahmebestätigung</div>
+    <div class="big" id="certName">${esc(S.name)||"Dein Name"}</div>
+    <p>hat den Selbstlernkurs <b>Einführung in die CHANCENkurve</b> erfolgreich abgeschlossen.</p>
+    <p style="font-variant-numeric:tabular-nums">${total} von 30 Fragen richtig · ${date}</p></div>
+   <p class="hint" style="margin-top:14px">Mach einen Screenshot und schick ihn an deine Schulteambegleitung.</p>
+   <div class="actions"><button class="btn ghost" id="home">Zur Kursübersicht</button></div></section>`;
+  $("#nm").oninput=e=>{S.name=e.target.value;save();$("#certName").textContent=S.name||"Dein Name";};
+  $("#home").onclick=renderStart;
+  go();
+}
+renderStart();
+</script>
+
+</body></html>
